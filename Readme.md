@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Марат Мизитов](https://up.htmlacademy.ru/javascript/14/user/606021).
-* Наставник: [Борис Ванюшин](https://up.htmlacademy.ru/javascript/14/user/62080).
+* Наставник: `Неизвестно`.
 
 ---
 
