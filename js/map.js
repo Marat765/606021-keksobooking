@@ -27,11 +27,14 @@ function getArrayOfGeneratedAds() {
   var getRandomNumber = function (a, b) {
     return Math.floor(Math.random() * (b - a + 1) + a);
   };
+  var getRandomNumberFromZeroTo = function (b) {
+    return Math.floor(Math.random() * (b));
+  };
   var getRandomArray = function (arr) {
     var randomArray = arr.slice();
     var temp;
     for (k = arr.length - 1; k > 0; k--) {
-      j = Math.floor(Math.random() * (k + 1));
+      j = getRandomNumberFromZeroTo(k + 1);
       temp = randomArray[j];
       randomArray[j] = randomArray[k];
       randomArray[k] = temp;
@@ -39,7 +42,7 @@ function getArrayOfGeneratedAds() {
     return randomArray;
   };
   var getRandomItem = function (arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
+    return arr[getRandomNumberFromZeroTo(arr.length - 1)];
   };
   var getListOfFeatures = function (arr) {
     var listOfFeatures = [];
