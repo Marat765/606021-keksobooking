@@ -3,34 +3,38 @@
 var i;
 var j;
 var k;
-var NUMBER_SIMILAR_ADS = 8;
-var NUMBER_OF_PHOTOS = 3;
+var ADS_COUNT = 8;
+var PHOTOS_COUNT = 3;
 var MAP_PIN_SIZE_X = 50;
 var MAP_PIN_SIZE_Y = 70;
 
 var similarAds = [];
-var ListOfFeatures = [];
 var titlesRandom = [];
-var titles = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
-var types = ['palace', 'flat', 'house', 'bungalo'];
-var checkin = ['12:00', '13:00', '14:00'];
-var checkout = ['12:00', '13:00', '14:00'];
-var allFeatures = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-var allPhotos = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
+var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
+var TYPES = ['palace', 'flat', 'house', 'bungalo'];
+var CHECKIN_TIME_STAMPS = ['12:00', '13:00', '14:00'];
+var CHECKOUT_TIME_STAMPS = ['12:00', '13:00', '14:00'];
+var ALL_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
+var ALL_PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
+var COMPLIANCE_OF_NAMES_OF_TYPES = {
+  'palace': 'Дворец',
+  'flat': 'Квартира',
+  'house': 'Дом',
+  'bungalo': 'Бунгало'
+};
 
-function getArray() {
+function getArrayOfGeneratedAds() {
   var getRandomNumber = function (a, b) {
-    return Math.floor(Math.random() * (b - a) + a);
+    return Math.floor(Math.random() * (b - a + 1) + a);
   };
   var getRandomArray = function (arr) {
-    var randomArray = arr;
-    j = arr.length - 1;
-    while (j > 0) {
-      var Temp = randomArray[j];
-      k = getRandomNumber(0, j);
+    var randomArray = arr.slice();
+    var temp;
+    for (k = arr.length - 1; k > 0; k--) {
+      j = Math.floor(Math.random() * (k + 1));
+      temp = randomArray[j];
       randomArray[j] = randomArray[k];
-      randomArray[k] = Temp;
-      j = j - 1;
+      randomArray[k] = temp;
     }
     return randomArray;
   };
@@ -38,16 +42,18 @@ function getArray() {
     return arr[Math.floor(Math.random() * arr.length)];
   };
   var getListOfFeatures = function (arr) {
+    var listOfFeatures = [];
     j = 0;
     k = getRandomNumber(-1, arr.length - 1);
     while (j <= k) {
-      ListOfFeatures[j] = arr[j];
+      listOfFeatures[j] = arr[j];
       j = j + 1;
     }
-    return ListOfFeatures;
+    return listOfFeatures;
   };
-  titlesRandom = getRandomArray(titles);
-  for (i = 0; i < NUMBER_SIMILAR_ADS; i++) {
+  titlesRandom = getRandomArray(TITLES);
+
+  for (i = 0; i < ADS_COUNT; i++) {
     similarAds[i] = {
       author: {
         avatar: 'img/avatars/user0' + (i + 1) + '.png'
@@ -62,21 +68,21 @@ function getArray() {
         title: titlesRandom[i],
         address: location.x + ', ' + location.y,
         price: getRandomNumber(1000, 1000000),
-        type: getRandomItem(types),
+        type: getRandomItem(TYPES),
         rooms: getRandomNumber(1, 5),
         guests: getRandomNumber(1, 100),
-        checkin: getRandomItem(checkin),
-        checkout: getRandomItem(checkout),
-        features: getListOfFeatures(getRandomArray(allFeatures)),
+        checkin: getRandomItem(CHECKIN_TIME_STAMPS),
+        checkout: getRandomItem(CHECKOUT_TIME_STAMPS),
+        features: getListOfFeatures(getRandomArray(ALL_FEATURES)),
         description: '',
-        photos: getRandomArray(allPhotos)
+        photos: getRandomArray(ALL_PHOTOS)
       }
     };
     similarAds[i].offer.address = similarAds[i].location.x + ', ' + similarAds[i].location.y;
   }
 }
 
-getArray();
+getArrayOfGeneratedAds();
 
 document.querySelector('.map').classList.remove('map--faded');
 
@@ -106,29 +112,17 @@ var renderCard = function (pinNumber) {
   mapCard.querySelector('.popup__title').textContent = similarAds[pinNumber].offer.title;
   mapCard.querySelector('.popup__text--address').textContent = similarAds[pinNumber].offer.address;
   mapCard.querySelector('.popup__text--price').textContent = similarAds[pinNumber].offer.price + '₽/ночь';
-
-  var typeRu;
-  if (similarAds[pinNumber].offer.type === 'palace') {
-    typeRu = 'Дворец';
-  } else if (similarAds[pinNumber].offer.type === 'flat') {
-    typeRu = 'Квартира';
-  } else if (similarAds[pinNumber].offer.type === 'house') {
-    typeRu = 'Дом';
-  } else if (similarAds[pinNumber].offer.type === 'bungalo') {
-    typeRu = 'Бунгало';
-  }
-
-  mapCard.querySelector('.popup__type').textContent = typeRu;
+  mapCard.querySelector('.popup__type').textContent = COMPLIANCE_OF_NAMES_OF_TYPES[similarAds[pinNumber].offer.type];
   mapCard.querySelector('.popup__text--capacity').textContent = similarAds[pinNumber].offer.rooms + ' комнаты для ' + similarAds[pinNumber].offer.guests + ' гостей';
   mapCard.querySelector('.popup__text--time').textContent = 'Заезд после ' + similarAds[pinNumber].offer.checkin + ', выезд до ' + similarAds[pinNumber].offer.checkout;
 
   var flag;
-  i = allFeatures.length - 1;
+  i = ALL_FEATURES.length - 1;
   while (i >= 0) {
     flag = true;
     j = 0;
     while (flag && (j < similarAds[pinNumber].offer.features.length)) {
-      if (allFeatures[i] === similarAds[pinNumber].offer.features[j]) {
+      if (ALL_FEATURES[i] === similarAds[pinNumber].offer.features[j]) {
         flag = false;
       }
       j = j + 1;
@@ -142,7 +136,7 @@ var renderCard = function (pinNumber) {
   mapCard.querySelector('.popup__description').textContent = similarAds[pinNumber].offer.description;
   var templatePhoto = mapCard.querySelector('.popup__photos').removeChild(mapCard.querySelector('.popup__photo'));
   i = 0;
-  while (i < NUMBER_OF_PHOTOS) {
+  while (i < PHOTOS_COUNT) {
     mapCard.querySelector('.popup__photos').insertBefore(templatePhoto.cloneNode(true), null);
     mapCard.querySelector('.popup__photos').children[i].src = similarAds[pinNumber].offer.photos[i];
     i = i + 1;
