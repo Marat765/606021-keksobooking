@@ -23,18 +23,18 @@ var COMPLIANCE_OF_NAMES_OF_TYPES = {
   'bungalo': 'Бунгало'
 };
 
-function getArrayOfGeneratedAds() {
+function getAdvertisement() {
   var getRandomNumber = function (a, b) {
     return Math.floor(Math.random() * (b - a + 1) + a);
   };
   var getRandomNumberFromZeroTo = function (b) {
-    return Math.floor(Math.random() * (b));
+    return Math.floor(Math.random() * (b + 1));
   };
   var getRandomArray = function (arr) {
     var randomArray = arr.slice();
     var temp;
     for (k = arr.length - 1; k > 0; k--) {
-      j = getRandomNumberFromZeroTo(k + 1);
+      j = getRandomNumberFromZeroTo(k);
       temp = randomArray[j];
       randomArray[j] = randomArray[k];
       randomArray[k] = temp;
@@ -46,12 +46,8 @@ function getArrayOfGeneratedAds() {
   };
   var getListOfFeatures = function (arr) {
     var listOfFeatures = [];
-    j = 0;
-    k = getRandomNumber(-1, arr.length - 1);
-    while (j <= k) {
-      listOfFeatures[j] = arr[j];
-      j = j + 1;
-    }
+    k = getRandomNumberFromZeroTo(arr.length - 1);
+    listOfFeatures = arr.slice(0, k + 1);
     return listOfFeatures;
   };
   titlesRandom = getRandomArray(TITLES);
@@ -85,7 +81,7 @@ function getArrayOfGeneratedAds() {
   }
 }
 
-getArrayOfGeneratedAds();
+getAdvertisement();
 
 document.querySelector('.map').classList.remove('map--faded');
 
@@ -119,10 +115,9 @@ var renderCard = function (pinNumber) {
   mapCard.querySelector('.popup__text--capacity').textContent = similarAds[pinNumber].offer.rooms + ' комнаты для ' + similarAds[pinNumber].offer.guests + ' гостей';
   mapCard.querySelector('.popup__text--time').textContent = 'Заезд после ' + similarAds[pinNumber].offer.checkin + ', выезд до ' + similarAds[pinNumber].offer.checkout;
 
-  var flag;
   i = ALL_FEATURES.length - 1;
   while (i >= 0) {
-    flag = true;
+    var flag = true;
     j = 0;
     while (flag && (j < similarAds[pinNumber].offer.features.length)) {
       if (ALL_FEATURES[i] === similarAds[pinNumber].offer.features[j]) {
