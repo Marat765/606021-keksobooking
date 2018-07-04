@@ -1,15 +1,21 @@
 'use strict';
 
-var i;
-var j;
-var k;
 var ADS_COUNT = 8;
 var PHOTOS_COUNT = 3;
 var MAP_PIN_SIZE_X = 50;
 var MAP_PIN_SIZE_Y = 70;
+var COORDINATES_X_MIN = 280;
+var COORDINATES_X_MAX = 1150;
+var COORDINATES_Y_MIN = 180;
+var COORDINATES_Y_MAX = 630;
+var PRICE_MIN = 1000;
+var PRICE_MAX = 1000000;
+var ROOMS_MIN = 1;
+var ROOMS_MAX = 5;
+var GUESTS_MIN = 1;
+var GUESTS_MAX = 100;
 
 var similarAds = [];
-var titlesRandom = [];
 var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
 var TYPES = ['palace', 'flat', 'house', 'bungalo'];
 var CHECKIN_TIME_STAMPS = ['12:00', '13:00', '14:00'];
@@ -24,11 +30,15 @@ var COMPLIANCE_OF_NAMES_OF_TYPES = {
 };
 
 function getAdvertisement() {
+  var i;
+  var j;
+  var k;
+  var titlesRandom = [];
   var getRandomNumber = function (a, b) {
     return Math.floor(Math.random() * (b - a + 1) + a);
   };
   var getRandomNumberFromZeroTo = function (b) {
-    return Math.floor(Math.random() * (b + 1));
+    return Math.floor(Math.random() * b);
   };
   var getRandomArray = function (arr) {
     var randomArray = arr.slice();
@@ -42,11 +52,11 @@ function getAdvertisement() {
     return randomArray;
   };
   var getRandomItem = function (arr) {
-    return arr[getRandomNumberFromZeroTo(arr.length - 1)];
+    return arr[getRandomNumberFromZeroTo(arr.length)];
   };
   var getListOfFeatures = function (arr) {
     var listOfFeatures = [];
-    k = getRandomNumberFromZeroTo(arr.length - 1);
+    k = getRandomNumberFromZeroTo(arr.length);
     listOfFeatures = arr.slice(0, k + 1);
     return listOfFeatures;
   };
@@ -59,17 +69,17 @@ function getAdvertisement() {
       },
 
       location: {
-        x: getRandomNumber(280, 1150),
-        y: getRandomNumber(180, 630)
+        x: getRandomNumber(COORDINATES_X_MIN, COORDINATES_X_MAX),
+        y: getRandomNumber(COORDINATES_Y_MIN, COORDINATES_Y_MAX)
       },
 
       offer: {
         title: titlesRandom[i],
         address: location.x + ', ' + location.y,
-        price: getRandomNumber(1000, 1000000),
+        price: getRandomNumber(PRICE_MIN, PRICE_MAX),
         type: getRandomItem(TYPES),
-        rooms: getRandomNumber(1, 5),
-        guests: getRandomNumber(1, 100),
+        rooms: getRandomNumber(ROOMS_MIN, ROOMS_MAX),
+        guests: getRandomNumber(GUESTS_MIN, GUESTS_MAX),
         checkin: getRandomItem(CHECKIN_TIME_STAMPS),
         checkout: getRandomItem(CHECKOUT_TIME_STAMPS),
         features: getListOfFeatures(getRandomArray(ALL_FEATURES)),
@@ -98,7 +108,7 @@ var renderPin = function (ad) {
 };
 
 var fragment = document.createDocumentFragment();
-i = 0;
+var i = 0;
 while (i < similarAds.length) {
   fragment.appendChild(renderPin(similarAds[i]));
   i = i + 1;
@@ -115,20 +125,17 @@ var renderCard = function (pinNumber) {
   mapCard.querySelector('.popup__text--capacity').textContent = similarAds[pinNumber].offer.rooms + ' комнаты для ' + similarAds[pinNumber].offer.guests + ' гостей';
   mapCard.querySelector('.popup__text--time').textContent = 'Заезд после ' + similarAds[pinNumber].offer.checkin + ', выезд до ' + similarAds[pinNumber].offer.checkout;
 
-  i = ALL_FEATURES.length - 1;
-  while (i >= 0) {
-    var flag = true;
-    j = 0;
-    while (flag && (j < similarAds[pinNumber].offer.features.length)) {
-      if (ALL_FEATURES[i] === similarAds[pinNumber].offer.features[j]) {
-        flag = false;
-      }
-      j = j + 1;
-    }
-    if (flag) {
-      mapCard.querySelector('.popup__features').removeChild(mapCard.querySelector('.popup__features').children[i]);
-    }
-    i = i - 1;
+  var mapFeatures = mapCard.querySelector('.popup__features');
+  while (mapFeatures.firstChild) {
+    mapFeatures.removeChild(mapFeatures.firstChild);
+  }
+  i = 0;
+  while (i < similarAds[pinNumber].offer.features.length) {
+    var featuresElement = document.createElement('li');
+    featuresElement.classList.add('popup__feature');
+    featuresElement.classList.add('popup__feature--' + similarAds[pinNumber].offer.features[i]);
+    mapFeatures.appendChild(featuresElement);
+    i = i + 1;
   }
 
   mapCard.querySelector('.popup__description').textContent = similarAds[pinNumber].offer.description;
