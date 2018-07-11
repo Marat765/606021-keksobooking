@@ -103,9 +103,6 @@ while (k < similarAds.length) {
   fragment.appendChild(renderPin(similarAds[k]));
   k = k + 1;
 }
-// document.querySelector('.map__pins').appendChild(fragment);
-
-// var mapCard = document.querySelector('template').content.querySelector('.map__card').cloneNode(true);
 
 var mapCard;
 
@@ -160,7 +157,7 @@ while (m < fieldsets.length) {
   m = m + 1;
 }
 
-function createMouseHandler(l) {
+function onPinClick(l) {
   return function () {
     var mapCard1 = document.querySelector('.map__card');
     if (mapCard1) {
@@ -173,7 +170,6 @@ function createMouseHandler(l) {
   };
 }
 
-
 function setPageToActiveMode() {
   document.querySelector('.map').classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
@@ -184,30 +180,10 @@ function setPageToActiveMode() {
   }
   document.querySelector('.map__pins').appendChild(fragment);
 
-  // document.querySelector('.map__pins').children[2].addEventListener('click', function () {
-  //   var mapCard1 = document.querySelector('.map__card');
-  //   if (mapCard1) {
-  //     mapCard1.remove();
-  //   }
-  //   mapCard = document.querySelector('template').content.querySelector('.map__card').cloneNode(true);
-  //   renderCard(0);
-  //   document.querySelector('.map').insertBefore(mapCard, document.querySelector('.map__filters-container'));
-  // });
-  // document.querySelector('.map__pins').children[3].addEventListener('click', function () {
-  //   var mapCard1 = document.querySelector('.map__card');
-  //   if (mapCard1) {
-  //     mapCard1.remove();
-  //   }
-  //   mapCard = document.querySelector('template').content.querySelector('.map__card').cloneNode(true);
-  //   renderCard(1);
-  //   document.querySelector('.map').insertBefore(mapCard, document.querySelector('.map__filters-container'));
-  // });
-
-
   var l = 0;
-  while (l < ADS_COUNT.length) {
+  while (l < ADS_COUNT) {
     var b = document.querySelector('.map__pins').children[l + 2];
-    b.addEventListener('click', createMouseHandler(l));
+    b.addEventListener('click', onPinClick(l));
     l = l + 1;
   }
 }
