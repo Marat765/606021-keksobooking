@@ -1,9 +1,9 @@
 'use strict';
 
 var similarAds = [];
+var ADS_COUNT = 8;
 
 function getAdvertisement() {
-  var ADS_COUNT = 8;
   var COORDINATES_X_MIN = 280;
   var COORDINATES_X_MAX = 1150;
   var COORDINATES_Y_MIN = 180;
@@ -24,13 +24,13 @@ function getAdvertisement() {
   var j;
   var titlesRandom = [];
 
-  var getRandomNumber = function (a, b) {
+  function getRandomNumber(a, b) {
     return Math.floor(Math.random() * (b - a + 1) + a);
-  };
-  var getRandomNumberFromZeroTo = function (b) {
+  }
+  function getRandomNumberFromZeroTo(b) {
     return Math.floor(Math.random() * b);
-  };
-  var getRandomArray = function (arr) {
+  }
+  function getRandomArray(arr) {
     var randomArray = arr.slice();
     var temp;
     for (var k = arr.length - 1; k > 0; k--) {
@@ -40,16 +40,16 @@ function getAdvertisement() {
       randomArray[k] = temp;
     }
     return randomArray;
-  };
-  var getRandomItem = function (arr) {
+  }
+  function getRandomItem(arr) {
     return arr[getRandomNumberFromZeroTo(arr.length)];
-  };
-  var getListOfFeatures = function (arr) {
+  }
+  function getListOfFeatures(arr) {
     var listOfFeatures = [];
     var k = getRandomNumberFromZeroTo(arr.length);
     listOfFeatures = arr.slice(0, k + 1);
     return listOfFeatures;
-  };
+  }
   titlesRandom = getRandomArray(TITLES);
 
   for (i = 0; i < ADS_COUNT; i++) {
@@ -83,13 +83,11 @@ function getAdvertisement() {
 
 getAdvertisement();
 
-document.querySelector('.map').classList.remove('map--faded');
-
 var mapPinTemplate = document.querySelector('template')
   .content
   .querySelector('.map__pin');
 
-var renderPin = function (ad) {
+function renderPin(ad) {
   var MAP_PIN_SIZE_X = 50;
   var MAP_PIN_SIZE_Y = 70;
   var adElement = mapPinTemplate.cloneNode(true);
@@ -97,7 +95,7 @@ var renderPin = function (ad) {
   adElement.querySelector('img').src = ad.author.avatar;
   adElement.querySelector('img').alt = ad.offer.title;
   return adElement;
-};
+}
 
 var fragment = document.createDocumentFragment();
 var k = 0;
@@ -105,11 +103,13 @@ while (k < similarAds.length) {
   fragment.appendChild(renderPin(similarAds[k]));
   k = k + 1;
 }
-document.querySelector('.map__pins').appendChild(fragment);
+// document.querySelector('.map__pins').appendChild(fragment);
 
-var mapCard = document.querySelector('template').content.querySelector('.map__card').cloneNode(true);
+// var mapCard = document.querySelector('template').content.querySelector('.map__card').cloneNode(true);
 
-var renderCard = function (pinNumber) {
+var mapCard;
+
+function renderCard(pinNumber) {
   var PHOTOS_COUNT = 3;
   var COMPLIANCE_OF_NAMES_OF_TYPES = {
     'palace': 'Дворец',
@@ -148,7 +148,75 @@ var renderCard = function (pinNumber) {
   }
   mapCard.querySelector('.popup__avatar').src = similarAds[pinNumber].author.avatar;
 
-  document.querySelector('.map').insertBefore(mapCard, document.querySelector('.map__filters-container'));
-};
+}
 
-renderCard(0);
+
+document.querySelector('#address').value = '300, 404';
+var adForm = document.querySelector('.ad-form');
+var fieldsets = adForm.querySelectorAll('fieldset');
+var m = 0;
+while (m < fieldsets.length) {
+  fieldsets[m].disabled = true;
+  m = m + 1;
+}
+
+function createMouseHandler(l) {
+  return function () {
+    var mapCard1 = document.querySelector('.map__card');
+    if (mapCard1) {
+      mapCard1.remove();
+    }
+    mapCard = document.querySelector('template').content.querySelector('.map__card').cloneNode(true);
+    renderCard(l);
+    var a = mapCard;
+    document.querySelector('.map').insertBefore(a, document.querySelector('.map__filters-container'));
+  };
+}
+
+
+function setPageToActiveMode() {
+  document.querySelector('.map').classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  m = 0;
+  while (m < fieldsets.length) {
+    fieldsets[m].disabled = false;
+    m = m + 1;
+  }
+  document.querySelector('.map__pins').appendChild(fragment);
+
+  // document.querySelector('.map__pins').children[2].addEventListener('click', function () {
+  //   var mapCard1 = document.querySelector('.map__card');
+  //   if (mapCard1) {
+  //     mapCard1.remove();
+  //   }
+  //   mapCard = document.querySelector('template').content.querySelector('.map__card').cloneNode(true);
+  //   renderCard(0);
+  //   document.querySelector('.map').insertBefore(mapCard, document.querySelector('.map__filters-container'));
+  // });
+  // document.querySelector('.map__pins').children[3].addEventListener('click', function () {
+  //   var mapCard1 = document.querySelector('.map__card');
+  //   if (mapCard1) {
+  //     mapCard1.remove();
+  //   }
+  //   mapCard = document.querySelector('template').content.querySelector('.map__card').cloneNode(true);
+  //   renderCard(1);
+  //   document.querySelector('.map').insertBefore(mapCard, document.querySelector('.map__filters-container'));
+  // });
+
+
+  var l = 0;
+  while (l < ADS_COUNT.length) {
+    var b = document.querySelector('.map__pins').children[l + 2];
+    b.addEventListener('click', createMouseHandler(l));
+    l = l + 1;
+  }
+}
+
+function setValueOfAddress(evt) {
+  document.querySelector('#address').value = evt.pageX + ', ' + evt.pageY;
+}
+
+document.querySelector('.map__pin--main').addEventListener('mouseup', function (evt) {
+  setPageToActiveMode();
+  setValueOfAddress(evt);
+});
