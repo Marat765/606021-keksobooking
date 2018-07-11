@@ -171,14 +171,14 @@ function setClickHahdler(l) {
 function setPageToActiveMode() {
   document.querySelector('.map').classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
-  m = 0;
-  while (m < fieldsets.length) {
-    fieldsets[m].disabled = false;
-    m = m + 1;
+  var l = 0;
+  while (l < fieldsets.length) {
+    fieldsets[l].disabled = false;
+    l = l + 1;
   }
   document.querySelector('.map__pins').appendChild(fragment);
 
-  var l = 0;
+  l = 0;
   while (l < ADS_COUNT) {
     var b = document.querySelector('.map__pins').children[l + 2];
     b.addEventListener('click', setClickHahdler(l));
