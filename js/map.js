@@ -98,10 +98,10 @@ function renderPin(ad) {
 }
 
 var fragment = document.createDocumentFragment();
-var k = 0;
-while (k < similarAds.length) {
-  fragment.appendChild(renderPin(similarAds[k]));
-  k = k + 1;
+var i = 0;
+while (i < similarAds.length) {
+  fragment.appendChild(renderPin(similarAds[i]));
+  i = i + 1;
 }
 
 var mapCard;
@@ -126,7 +126,7 @@ function renderCard(pinNumber) {
   while (mapFeatures.firstChild) {
     mapFeatures.removeChild(mapFeatures.firstChild);
   }
-  var i = 0;
+  i = 0;
   while (i < similarAds[pinNumber].offer.features.length) {
     var featuresElement = document.createElement('li');
     featuresElement.classList.add('popup__feature');
@@ -144,24 +144,22 @@ function renderCard(pinNumber) {
     i = i + 1;
   }
   mapCard.querySelector('.popup__avatar').src = similarAds[pinNumber].author.avatar;
-
 }
 
 
 document.querySelector('#address').value = '300, 404';
 var adForm = document.querySelector('.ad-form');
 var fieldsets = adForm.querySelectorAll('fieldset');
-var m = 0;
-while (m < fieldsets.length) {
+for (var m = 0; m < fieldsets.length; i++) {
   fieldsets[m].disabled = true;
   m = m + 1;
 }
 
-function onPinClick(l) {
+function setClickHahdler(l) {
   return function () {
-    var mapCard1 = document.querySelector('.map__card');
-    if (mapCard1) {
-      mapCard1.remove();
+    mapCard = document.querySelector('.map__card');
+    if (mapCard) {
+      mapCard.remove();
     }
     mapCard = document.querySelector('template').content.querySelector('.map__card').cloneNode(true);
     renderCard(l);
@@ -183,7 +181,7 @@ function setPageToActiveMode() {
   var l = 0;
   while (l < ADS_COUNT) {
     var b = document.querySelector('.map__pins').children[l + 2];
-    b.addEventListener('click', onPinClick(l));
+    b.addEventListener('click', setClickHahdler(l));
     l = l + 1;
   }
 }
