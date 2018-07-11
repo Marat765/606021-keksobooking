@@ -155,7 +155,7 @@ for (var m = 0; m < fieldsets.length; i++) {
   m = m + 1;
 }
 
-function setClickHahdler(l) {
+function generateClickHahdler(l) {
   return function () {
     mapCard = document.querySelector('.map__card');
     if (mapCard) {
@@ -181,7 +181,7 @@ function setPageToActiveMode() {
   l = 0;
   while (l < ADS_COUNT) {
     var b = document.querySelector('.map__pins').children[l + 2];
-    b.addEventListener('click', setClickHahdler(l));
+    b.addEventListener('click', generateClickHahdler(l));
     l = l + 1;
   }
 }
