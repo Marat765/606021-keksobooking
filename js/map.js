@@ -1,65 +1,55 @@
 'use strict';
 
-var ADS_COUNT = 8;
-var PHOTOS_COUNT = 3;
-var MAP_PIN_SIZE_X = 50;
-var MAP_PIN_SIZE_Y = 70;
-var COORDINATES_X_MIN = 280;
-var COORDINATES_X_MAX = 1150;
-var COORDINATES_Y_MIN = 180;
-var COORDINATES_Y_MAX = 630;
-var PRICE_MIN = 1000;
-var PRICE_MAX = 1000000;
-var ROOMS_MIN = 1;
-var ROOMS_MAX = 5;
-var GUESTS_MIN = 1;
-var GUESTS_MAX = 100;
-
 var similarAds = [];
-var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
-var TYPES = ['palace', 'flat', 'house', 'bungalo'];
-var CHECKIN_TIME_STAMPS = ['12:00', '13:00', '14:00'];
-var CHECKOUT_TIME_STAMPS = ['12:00', '13:00', '14:00'];
-var ALL_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-var ALL_PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
-var COMPLIANCE_OF_NAMES_OF_TYPES = {
-  'palace': 'Дворец',
-  'flat': 'Квартира',
-  'house': 'Дом',
-  'bungalo': 'Бунгало'
-};
+var ADS_COUNT = 8;
 
 function getAdvertisement() {
+  var COORDINATES_X_MIN = 280;
+  var COORDINATES_X_MAX = 1150;
+  var COORDINATES_Y_MIN = 180;
+  var COORDINATES_Y_MAX = 630;
+  var PRICE_MIN = 1000;
+  var PRICE_MAX = 1000000;
+  var ROOMS_MIN = 1;
+  var ROOMS_MAX = 5;
+  var GUESTS_MIN = 1;
+  var GUESTS_MAX = 100;
+  var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
+  var TYPES = ['palace', 'flat', 'house', 'bungalo'];
+  var CHECKIN_TIME_STAMPS = ['12:00', '13:00', '14:00'];
+  var CHECKOUT_TIME_STAMPS = ['12:00', '13:00', '14:00'];
+  var ALL_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
+  var ALL_PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
   var i;
   var j;
-  var k;
   var titlesRandom = [];
-  var getRandomNumber = function (a, b) {
+
+  function getRandomNumber(a, b) {
     return Math.floor(Math.random() * (b - a + 1) + a);
-  };
-  var getRandomNumberFromZeroTo = function (b) {
+  }
+  function getRandomNumberFromZeroTo(b) {
     return Math.floor(Math.random() * b);
-  };
-  var getRandomArray = function (arr) {
+  }
+  function getRandomArray(arr) {
     var randomArray = arr.slice();
     var temp;
-    for (k = arr.length - 1; k > 0; k--) {
+    for (var k = arr.length - 1; k > 0; k--) {
       j = getRandomNumberFromZeroTo(k);
       temp = randomArray[j];
       randomArray[j] = randomArray[k];
       randomArray[k] = temp;
     }
     return randomArray;
-  };
-  var getRandomItem = function (arr) {
+  }
+  function getRandomItem(arr) {
     return arr[getRandomNumberFromZeroTo(arr.length)];
-  };
-  var getListOfFeatures = function (arr) {
+  }
+  function getListOfFeatures(arr) {
     var listOfFeatures = [];
-    k = getRandomNumberFromZeroTo(arr.length);
+    var k = getRandomNumberFromZeroTo(arr.length);
     listOfFeatures = arr.slice(0, k + 1);
     return listOfFeatures;
-  };
+  }
   titlesRandom = getRandomArray(TITLES);
 
   for (i = 0; i < ADS_COUNT; i++) {
@@ -93,19 +83,19 @@ function getAdvertisement() {
 
 getAdvertisement();
 
-document.querySelector('.map').classList.remove('map--faded');
-
 var mapPinTemplate = document.querySelector('template')
   .content
   .querySelector('.map__pin');
 
-var renderPin = function (ad) {
+function renderPin(ad) {
+  var MAP_PIN_SIZE_X = 50;
+  var MAP_PIN_SIZE_Y = 70;
   var adElement = mapPinTemplate.cloneNode(true);
   adElement.style = 'left: ' + (ad.location.x - MAP_PIN_SIZE_X / 2) + 'px; top: ' + (ad.location.y - MAP_PIN_SIZE_Y) + 'px;';
   adElement.querySelector('img').src = ad.author.avatar;
   adElement.querySelector('img').alt = ad.offer.title;
   return adElement;
-};
+}
 
 var fragment = document.createDocumentFragment();
 var i = 0;
@@ -113,11 +103,18 @@ while (i < similarAds.length) {
   fragment.appendChild(renderPin(similarAds[i]));
   i = i + 1;
 }
-document.querySelector('.map__pins').appendChild(fragment);
 
-var mapCard = document.querySelector('template').content.querySelector('.map__card').cloneNode(true);
+var mapCard;
 
-var renderCard = function (pinNumber) {
+function renderCard(pinNumber) {
+  var PHOTOS_COUNT = 3;
+  var COMPLIANCE_OF_NAMES_OF_TYPES = {
+    'palace': 'Дворец',
+    'flat': 'Квартира',
+    'house': 'Дом',
+    'bungalo': 'Бунгало'
+  };
+
   mapCard.querySelector('.popup__title').textContent = similarAds[pinNumber].offer.title;
   mapCard.querySelector('.popup__text--address').textContent = similarAds[pinNumber].offer.address;
   mapCard.querySelector('.popup__text--price').textContent = similarAds[pinNumber].offer.price + '₽/ночь';
@@ -147,8 +144,52 @@ var renderCard = function (pinNumber) {
     i = i + 1;
   }
   mapCard.querySelector('.popup__avatar').src = similarAds[pinNumber].author.avatar;
+}
 
-  document.querySelector('.map').insertBefore(mapCard, document.querySelector('.map__filters-container'));
-};
 
-renderCard(0);
+document.querySelector('#address').value = '300, 404';
+var adForm = document.querySelector('.ad-form');
+var fieldsets = adForm.querySelectorAll('fieldset');
+for (var m = 0; m < fieldsets.length; m++) {
+  fieldsets[m].disabled = true;
+}
+
+function generateClickHahdler(l) {
+  return function () {
+    mapCard = document.querySelector('.map__card');
+    if (mapCard) {
+      mapCard.remove();
+    }
+    mapCard = document.querySelector('template').content.querySelector('.map__card').cloneNode(true);
+    renderCard(l);
+    var a = mapCard;
+    document.querySelector('.map').insertBefore(a, document.querySelector('.map__filters-container'));
+  };
+}
+
+function setPageToActiveMode() {
+  document.querySelector('.map').classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  var l = 0;
+  while (l < fieldsets.length) {
+    fieldsets[l].disabled = false;
+    l = l + 1;
+  }
+  document.querySelector('.map__pins').appendChild(fragment);
+
+  l = 0;
+  while (l < ADS_COUNT) {
+    var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    mapPins[l].addEventListener('click', generateClickHahdler(l));
+    l = l + 1;
+  }
+}
+
+function setValueOfAddress(evt) {
+  document.querySelector('#address').value = evt.pageX + ', ' + evt.pageY;
+}
+
+document.querySelector('.map__pin--main').addEventListener('mouseup', function (evt) {
+  setPageToActiveMode();
+  setValueOfAddress(evt);
+});
