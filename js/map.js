@@ -150,9 +150,8 @@ function renderCard(pinNumber) {
 document.querySelector('#address').value = '300, 404';
 var adForm = document.querySelector('.ad-form');
 var fieldsets = adForm.querySelectorAll('fieldset');
-for (var m = 0; m < fieldsets.length; i++) {
+for (var m = 0; m < fieldsets.length; m++) {
   fieldsets[m].disabled = true;
-  m = m + 1;
 }
 
 function generateClickHahdler(l) {
@@ -180,8 +179,8 @@ function setPageToActiveMode() {
 
   l = 0;
   while (l < ADS_COUNT) {
-    var b = document.querySelector('.map__pins').children[l + 2];
-    b.addEventListener('click', generateClickHahdler(l));
+    var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    mapPins[l].addEventListener('click', generateClickHahdler(l));
     l = l + 1;
   }
 }
