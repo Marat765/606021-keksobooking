@@ -195,8 +195,8 @@ document.querySelector('.map__pin--main').addEventListener('mouseup', function (
 });
 
 
-function getAttributeValue(a, b) {
-  return a.getAttribute(b);
+function getAttributeValue(elem, attribute) {
+  return elem.getAttribute(attribute);
 }
 function CustomValidation() {}
 
@@ -249,9 +249,9 @@ submit.addEventListener('click', function (evt) {
   var inputs = document.querySelectorAll('.ad-form input');
   for (var j = 0; j < inputs.length; j++) {
     var input = inputs[j];
-    if (input.nextElementSibling) {
-      input.nextElementSibling.remove();
-    }
+    // if (input.nextElementSibling) {
+    //   input.nextElementSibling.remove();
+    // }
     // Проверим валидность поля, используя встроенную в JavaScript функцию checkValidity()
     if (input.checkValidity() === false) {
       var inputCustomValidation = new CustomValidation(); // Создадим объект CustomValidation
@@ -265,9 +265,9 @@ submit.addEventListener('click', function (evt) {
     } // закончился if
   } // закончился цикл
   setTimeout(function () {
-    var ddd = document.querySelectorAll('.error-message');
-    for (j = 0; j < ddd.length; j++) {
-      ddd[j].remove();
+    var errorMessages = document.querySelectorAll('.error-message');
+    for (j = 0; j < errorMessages.length; j++) {
+      errorMessages[j].remove();
     }
   }, 5000);
   if (stopSubmit) {
