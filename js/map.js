@@ -195,6 +195,7 @@ document.querySelector('.map__pin--main').addEventListener('mouseup', function (
 });
 
 
+// Валидация
 function getAttributeValue(elem, attribute) {
   return elem.getAttribute(attribute);
 }
