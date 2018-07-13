@@ -193,3 +193,84 @@ document.querySelector('.map__pin--main').addEventListener('mouseup', function (
   setPageToActiveMode();
   setValueOfAddress(evt);
 });
+
+
+function getAttributeValue(a, b) {
+  return a.getAttribute(b);
+}
+function CustomValidation() {}
+
+CustomValidation.prototype = {
+  // Установим пустой массив сообщений об ошибках
+  invalidities: [],
+  // Метод, проверяющий валидность
+  checkValidity: function (input) {
+    var validity = input.validity;
+    if (validity.rangeOverflow) {
+      var max = getAttributeValue(input, 'max');
+      this.addInvalidity('Максимальное значение ' + max);
+    }
+    if (validity.rangeUnderflow) {
+      var min = getAttributeValue(input, 'min');
+      this.addInvalidity('Минимальное значение ' + min);
+    }
+    if (validity.tooShort) {
+      var minlength = getAttributeValue(input, 'minlength');
+      this.addInvalidity('Минимальная длина ' + minlength);
+    }
+    if (validity.tooLong) {
+      var maxlength = getAttributeValue(input, 'maxlength');
+      this.addInvalidity('Максимальная длина ' + maxlength);
+    }
+    // И остальные проверки валидности...
+  },
+  // Добавляем сообщение об ошибке в массив ошибок
+  addInvalidity: function (message) {
+    this.invalidities.push(message);
+  },
+  // Получаем общий текст сообщений об ошибках
+  getInvalidities: function () {
+    return this.invalidities.join('. \n');
+  }
+};
+
+CustomValidation.prototype.getInvaliditiesForHTML = function () {
+  return this.invalidities.join('. <br>');
+};
+// Добавляем обработчик клика на кнопку отправки формы
+var submit = document.querySelector('.ad-form__submit');
+submit.addEventListener('click', function (evt) {
+  // var messages = document.querySelectorAll('.error-message');
+  // for (var j = 0; j < messages.length; j++) {
+  //   messages[j].remove();
+  // }
+  // Пройдёмся по всем полям
+  var stopSubmit = false;
+  var inputs = document.querySelectorAll('.ad-form input');
+  for (var j = 0; j < inputs.length; j++) {
+    var input = inputs[j];
+    if (input.nextElementSibling) {
+      input.nextElementSibling.remove();
+    }
+    // Проверим валидность поля, используя встроенную в JavaScript функцию checkValidity()
+    if (input.checkValidity() === false) {
+      var inputCustomValidation = new CustomValidation(); // Создадим объект CustomValidation
+      inputCustomValidation.checkValidity(input); // Выявим ошибки
+      var customValidityMessage = inputCustomValidation.getInvalidities(); // Получим все сообщения об ошибках
+      input.setCustomValidity(customValidityMessage); // Установим специальное сообщение об ошибке
+      // Добавим ошибки в документ
+      var customValidityMessageForHTML = inputCustomValidation.getInvaliditiesForHTML();
+      input.insertAdjacentHTML('afterend', '<p class="error-message">' + customValidityMessageForHTML + '</p>');
+      stopSubmit = true;
+    } // закончился if
+  } // закончился цикл
+  setTimeout(function () {
+    var ddd = document.querySelectorAll('.error-message');
+    for (j = 0; j < ddd.length; j++) {
+      ddd[j].remove();
+    }
+  }, 5000);
+  if (stopSubmit) {
+    evt.preventDefault();
+  }
+});
