@@ -15,8 +15,8 @@ function getAdvertisement() {
   var ROOMS_MAX = 5;
   var GUESTS_MIN = 1;
   var GUESTS_MAX = 100;
-  var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
   var TYPES = ['palace', 'flat', 'house', 'bungalo'];
+  var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
   var CHECKIN_TIME_STAMPS = ['12:00', '13:00', '14:00'];
   var CHECKOUT_TIME_STAMPS = ['12:00', '13:00', '14:00'];
   var ALL_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
@@ -152,8 +152,8 @@ function renderCard(pinNumber) {
 document.querySelector('#address').value = '300, 404';
 var adForm = document.querySelector('.ad-form');
 var fieldsets = adForm.querySelectorAll('fieldset');
-for (var m = 0; m < fieldsets.length; m++) {
-  fieldsets[m].disabled = true;
+for (i = 0; i < fieldsets.length; i++) {
+  fieldsets[i].disabled = true;
 }
 
 function generateClickHahdler(l) {
@@ -197,9 +197,6 @@ document.querySelector('.map__pin--main').addEventListener('mouseup', function (
 });
 
 
-function getAttributeValue(elem, attribute) {
-  return elem.getAttribute(attribute);
-}
 function CustomValidation() {}
 
 CustomValidation.prototype = {
@@ -210,19 +207,19 @@ CustomValidation.prototype = {
     this.invalidities = [];
     var validity = input.validity;
     if (validity.rangeOverflow) {
-      var max = getAttributeValue(input, 'max');
+      var max = input.getAttribute('max');
       this.addInvalidity('Максимальное значение ' + max);
     }
     if (validity.rangeUnderflow) {
-      var min = getAttributeValue(input, 'min');
+      var min = input.getAttribute('min');
       this.addInvalidity('Минимальное значение ' + min);
     }
     if (validity.tooShort) {
-      var minlength = getAttributeValue(input, 'minlength');
+      var minlength = input.getAttribute('minlength');
       this.addInvalidity('Минимальная длина ' + minlength);
     }
     if (validity.tooLong) {
-      var maxlength = getAttributeValue(input, 'maxlength');
+      var maxlength = input.getAttribute('maxlength');
       this.addInvalidity('Максимальная длина ' + maxlength);
     }
     if (validity.valueMissing) {
@@ -280,19 +277,14 @@ function onSelectTypeChange() {
   var PRICE_MIN_FLAT = 1000;
   var PRICE_MIN_HOUSE = 5000;
   var PRICE_MIN_PALACE = 10000;
-  if (selectTypeHouse.value === 'bungalo') {
-    priceHouse.placeholder = PRICE_MIN_BUNGALO + '';
-    priceHouse.min = PRICE_MIN_BUNGALO;
-  } else if (selectTypeHouse.value === 'flat') {
-    priceHouse.placeholder = PRICE_MIN_FLAT + '';
-    priceHouse.min = PRICE_MIN_FLAT;
-  } else if (selectTypeHouse.value === 'house') {
-    priceHouse.placeholder = PRICE_MIN_HOUSE + '';
-    priceHouse.min = PRICE_MIN_HOUSE;
-  } else if (selectTypeHouse.value === 'palace') {
-    priceHouse.placeholder = PRICE_MIN_PALACE + '';
-    priceHouse.min = PRICE_MIN_PALACE;
-  }
+  var COMPLIANCE_TYPE_PRICE = {
+    palace: PRICE_MIN_PALACE,
+    flat: PRICE_MIN_FLAT,
+    house: PRICE_MIN_HOUSE,
+    bungalo: PRICE_MIN_BUNGALO
+  };
+  priceHouse.placeholder = COMPLIANCE_TYPE_PRICE[selectTypeHouse.value];
+  priceHouse.min = COMPLIANCE_TYPE_PRICE[selectTypeHouse.value];
 }
 selectTypeHouse.addEventListener('change', onSelectTypeChange);
 
@@ -311,35 +303,19 @@ timeOut.addEventListener('change', onSelectTimeChange);
 var roomNumberSelect = adForm.querySelector('#room_number');
 var capacitySelect = adForm.querySelector('#capacity');
 function onSelectCapacityChange(evt) {
-  var SelectedCapacity = '[value="' + capacitySelect.value + '"]';
-  function deleteAttrDisabled() {
-    var capacitySelectOptions = adForm.querySelectorAll('#capacity option');
-    for (var j = 0; j < capacitySelectOptions.length; j++) {
-      capacitySelectOptions[j].disabled = false;
-    }
+  var COMPLIANCE_ROOMS_CAPACITY = {
+    3: [0, 1, 2],
+    2: [3],
+    1: [0, 3],
+    0: [0, 1, 3]
+  };
+  var capacitySelectOptions = adForm.querySelectorAll('#capacity option');
+  for (var j = 0; j < capacitySelectOptions.length; j++) {
+    capacitySelectOptions[j].disabled = false;
   }
-  if (evt.target.selectedIndex === 3) {
-    deleteAttrDisabled();
-    capacitySelect.selectedIndex = 3;
-    capacitySelect.options[0].disabled = true;
-    capacitySelect.options[1].disabled = true;
-    capacitySelect.options[2].disabled = true;
-  } else if (evt.target.selectedIndex === 0) {
-    deleteAttrDisabled();
-    capacitySelect.selectedIndex = 2;
-    capacitySelect.options[0].disabled = true;
-    capacitySelect.options[1].disabled = true;
-    capacitySelect.options[3].disabled = true;
-  } else if (evt.target.selectedIndex === 1) {
-    deleteAttrDisabled();
-    capacitySelect.selectedIndex = 1;
-    capacitySelect.options[0].disabled = true;
-    capacitySelect.options[3].disabled = true;
-  } else if (evt.target.selectedIndex === 2) {
-    deleteAttrDisabled();
-    capacitySelect.selectedIndex = 0;
-    capacitySelect.options[3].disabled = true;
+  var capacities = COMPLIANCE_ROOMS_CAPACITY[evt.target.selectedIndex];
+  for (j = 0; j < capacities.length; j++) {
+    capacitySelect.options[capacities[j]].disabled = true;
   }
-  capacitySelect.querySelector(SelectedCapacity).selected = true;
 }
 roomNumberSelect.addEventListener('change', onSelectCapacityChange);
