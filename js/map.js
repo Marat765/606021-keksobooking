@@ -243,6 +243,7 @@ CustomValidation.prototype.getInvaliditiesForHTML = function () {
 var submit = document.querySelector('.ad-form__submit');
 submit.addEventListener('click', function (evt) {
   // Пройдёмся по всем полям
+  adForm.querySelector('#capacity').style.cssText = '';
   var stopSubmit = false;
   var inputs = document.querySelectorAll('.ad-form input');
   for (var j = 0; j < inputs.length; j++) {
@@ -259,8 +260,14 @@ submit.addEventListener('click', function (evt) {
       stopSubmit = true;
     }
   }
+  var index = adForm.querySelector('#capacity').selectedIndex;
+  if (adForm.querySelector('#capacity').options[index].disabled === true) {
+    stopSubmit = true;
+    adForm.querySelector('#capacity').insertAdjacentHTML('afterend', '<p class="error-message">' + 'Измените количество гостей' + '</p>');
+    adForm.querySelector('#capacity').style.cssText = 'border: 1px solid red; box-shadow: 0 0 3px red;';
+  }
   setTimeout(function () {
-    var errorMessages = document.querySelectorAll('.error-message');
+    var errorMessages = adForm.querySelectorAll('.error-message');
     for (j = 0; j < errorMessages.length; j++) {
       errorMessages[j].remove();
     }
