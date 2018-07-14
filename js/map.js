@@ -311,6 +311,7 @@ timeOut.addEventListener('change', onSelectTimeChange);
 var roomNumberSelect = adForm.querySelector('#room_number');
 var capacitySelect = adForm.querySelector('#capacity');
 function onSelectCapacityChange(evt) {
+  var SelectedCapacity = '[value="' + capacitySelect.value + '"]';
   function deleteAttrDisabled() {
     var capacitySelectOptions = adForm.querySelectorAll('#capacity option');
     for (var j = 0; j < capacitySelectOptions.length; j++) {
@@ -339,5 +340,6 @@ function onSelectCapacityChange(evt) {
     capacitySelect.selectedIndex = 0;
     capacitySelect.options[3].disabled = true;
   }
+  capacitySelect.querySelector(SelectedCapacity).selected = true;
 }
 roomNumberSelect.addEventListener('change', onSelectCapacityChange);
