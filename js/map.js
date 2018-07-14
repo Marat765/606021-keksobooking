@@ -263,7 +263,7 @@ submit.addEventListener('click', function (evt) {
   var index = adForm.querySelector('#capacity').selectedIndex;
   if (adForm.querySelector('#capacity').options[index].disabled === true) {
     stopSubmit = true;
-    adForm.querySelector('#capacity').insertAdjacentHTML('afterend', '<p class="error-message">' + 'Измените количество гостей' + '</p>');
+    adForm.querySelector('#capacity').insertAdjacentHTML('afterend', '<p class="error-message">Измените количество мест</p>');
     adForm.querySelector('#capacity').style.cssText = 'border: 1px solid red; box-shadow: 0 0 3px red;';
   }
   setTimeout(function () {
