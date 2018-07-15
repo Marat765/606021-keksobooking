@@ -314,12 +314,12 @@ var FOR_2_GUESTS = 1;
 var FOR_3_GUESTS = 2;
 var NOT_FOR_GUESTS = 3;
 function onSelectCapacityChange(evt) {
-  var COMPLIANCE_ROOMS_CAPACITY = {
-    3: [FOR_1_GUEST, FOR_2_GUESTS, FOR_3_GUESTS],
-    2: [NOT_FOR_GUESTS],
-    1: [FOR_3_GUESTS, NOT_FOR_GUESTS],
-    0: [FOR_2_GUESTS, FOR_3_GUESTS, NOT_FOR_GUESTS]
-  };
+  var COMPLIANCE_ROOMS_CAPACITY = [
+    [FOR_2_GUESTS, FOR_3_GUESTS, NOT_FOR_GUESTS],
+    [FOR_3_GUESTS, NOT_FOR_GUESTS],
+    [NOT_FOR_GUESTS],
+    [FOR_1_GUEST, FOR_2_GUESTS, FOR_3_GUESTS]
+  ];
   var capacitySelectOptions = adForm.querySelectorAll('#capacity option');
   for (var j = 0; j < capacitySelectOptions.length; j++) {
     capacitySelectOptions[j].disabled = false;
