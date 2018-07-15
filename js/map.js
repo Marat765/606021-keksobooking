@@ -249,7 +249,7 @@ submit.addEventListener('click', function (evt) {
   for (var j = 0; j < inputs.length; j++) {
     var input = inputs[j];
     // Проверим валидность поля, используя встроенную в JavaScript функцию checkValidity()
-    if (input.checkValidity() === false) {
+    if (!input.checkValidity()) {
       var inputCustomValidation = new CustomValidation(); // Создадим объект CustomValidation
       inputCustomValidation.checkValidity(input); // Выявим ошибки
       var customValidityMessage = inputCustomValidation.getInvalidities(); // Получим все сообщения об ошибках
@@ -309,12 +309,16 @@ timeOut.addEventListener('change', onSelectTimeChange);
 
 var roomNumberSelect = adForm.querySelector('#room_number');
 var capacitySelect = adForm.querySelector('#capacity');
+var FOR_1_GUEST = 0;
+var FOR_2_GUESTS = 1;
+var FOR_3_GUESTS = 2;
+var NOT_FOR_GUESTS = 3;
 function onSelectCapacityChange(evt) {
   var COMPLIANCE_ROOMS_CAPACITY = {
-    3: [0, 1, 2],
-    2: [3],
-    1: [0, 3],
-    0: [0, 1, 3]
+    3: [FOR_1_GUEST, FOR_2_GUESTS, FOR_3_GUESTS],
+    2: [NOT_FOR_GUESTS],
+    1: [FOR_3_GUESTS, NOT_FOR_GUESTS],
+    0: [FOR_2_GUESTS, FOR_3_GUESTS, NOT_FOR_GUESTS]
   };
   var capacitySelectOptions = adForm.querySelectorAll('#capacity option');
   for (var j = 0; j < capacitySelectOptions.length; j++) {
