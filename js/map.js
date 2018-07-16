@@ -3,12 +3,16 @@
 var similarAds = [];
 var ADS_COUNT = 8;
 var i;
+var COORDINATES_Y_MIN = 180;
+var COORDINATES_Y_MAX = 680;
+var MAP_PIN_SIZE_X = 50;
+var MAP_PIN_SIZE_Y = 70;
+var MAP_PIN_MAIN_SIZE_X = 62;
+var MAP_PIN_MAIN_SIZE_Y = 84;
 
 function getAdvertisement() {
-  var COORDINATES_X_MIN = 280;
+  var COORDINATES_X_MIN = 180;
   var COORDINATES_X_MAX = 1150;
-  var COORDINATES_Y_MIN = 180;
-  var COORDINATES_Y_MAX = 630;
   var PRICE_MIN = 1000;
   var PRICE_MAX = 1000000;
   var ROOMS_MIN = 1;
@@ -81,16 +85,12 @@ function getAdvertisement() {
     similarAds[m].offer.address = similarAds[m].location.x + ', ' + similarAds[m].location.y;
   }
 }
-
 getAdvertisement();
 
 var mapPinTemplate = document.querySelector('template')
   .content
   .querySelector('.map__pin');
-
 function renderPin(ad) {
-  var MAP_PIN_SIZE_X = 50;
-  var MAP_PIN_SIZE_Y = 70;
   var adElement = mapPinTemplate.cloneNode(true);
   adElement.style = 'left: ' + (ad.location.x - MAP_PIN_SIZE_X / 2) + 'px; top: ' + (ad.location.y - MAP_PIN_SIZE_Y) + 'px;';
   adElement.querySelector('img').src = ad.author.avatar;
@@ -104,7 +104,6 @@ while (i < similarAds.length) {
   fragment.appendChild(renderPin(similarAds[i]));
   i = i + 1;
 }
-
 var mapCard;
 
 function renderCard(pinNumber) {
@@ -148,9 +147,9 @@ function renderCard(pinNumber) {
   mapCard.querySelector('.popup__avatar').src = similarAds[pinNumber].author.avatar;
 }
 
-
-document.querySelector('#address').value = '300, 404';
 var adForm = document.querySelector('.ad-form');
+var mapPinMain = document.querySelector('.map__pin--main');
+adForm.querySelector('#address').value = (parseInt(mapPinMain.style.left, 10) + MAP_PIN_MAIN_SIZE_X / 2) + ', ' + (parseInt(mapPinMain.style.top, 10) + MAP_PIN_MAIN_SIZE_Y);
 var fieldsets = adForm.querySelectorAll('fieldset');
 for (i = 0; i < fieldsets.length; i++) {
   fieldsets[i].disabled = true;
@@ -178,7 +177,6 @@ function setPageToActiveMode() {
     l = l + 1;
   }
   document.querySelector('.map__pins').appendChild(fragment);
-
   l = 0;
   while (l < ADS_COUNT) {
     var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
@@ -187,13 +185,8 @@ function setPageToActiveMode() {
   }
 }
 
-function setValueOfAddress(evt) {
-  document.querySelector('#address').value = evt.pageX + ', ' + evt.pageY;
-}
-
-document.querySelector('.map__pin--main').addEventListener('mouseup', function (evt) {
+mapPinMain.addEventListener('mouseup', function () {
   setPageToActiveMode();
-  setValueOfAddress(evt);
 });
 
 
@@ -330,3 +323,60 @@ function onSelectCapacityChange(evt) {
   }
 }
 roomNumberSelect.addEventListener('change', onSelectCapacityChange);
+
+
+var body = document.querySelector('body');
+mapPinMain.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
+  var startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+  var dragged = false;
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+    dragged = true;
+    var shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+    document.querySelector('#address').value = (mapPinMain.offsetLeft - shift.x + MAP_PIN_MAIN_SIZE_X / 2) + ', ' + (mapPinMain.offsetTop - shift.y + MAP_PIN_MAIN_SIZE_Y);
+    if (mapPinMain.offsetTop - shift.y < COORDINATES_Y_MIN - MAP_PIN_MAIN_SIZE_Y) {
+      mapPinMain.style.top = COORDINATES_Y_MIN - MAP_PIN_MAIN_SIZE_Y;
+    } else if (mapPinMain.offsetTop - shift.y > COORDINATES_Y_MAX - MAP_PIN_MAIN_SIZE_Y) {
+      mapPinMain.style.top = COORDINATES_Y_MAX - MAP_PIN_MAIN_SIZE_Y;
+    } else {
+      mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px';
+    }
+    if (mapPinMain.offsetLeft - shift.x < 0) {
+      mapPinMain.style.left = 0;
+    } else if (mapPinMain.offsetLeft - shift.x > body.offsetWidth - MAP_PIN_MAIN_SIZE_X) {
+      mapPinMain.style.left = body.offsetWidth - MAP_PIN_MAIN_SIZE_X;
+    } else {
+      mapPinMain.style.left = (mapPinMain.offsetLeft - shift.x) + 'px';
+    }
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+    if (dragged) {
+      var onClickPreventDefault = function () {
+        evt.preventDefault();
+        mapPinMain.removeEventListener('click', onClickPreventDefault);
+      };
+      mapPinMain.addEventListener('click', onClickPreventDefault);
+    }
+  };
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+});
+
+
