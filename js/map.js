@@ -3,7 +3,7 @@
 var similarAds = [];
 var ADS_COUNT = 8;
 var COORDINATES_Y_MIN = 180;
-var COORDINATES_Y_MAX = 680;
+var COORDINATES_Y_MAX = 670;
 var MAIN_PIN_SIZE_X = 62;
 var MAIN_PIN_SIZE_Y = 84;
 var i;
@@ -328,38 +328,46 @@ roomNumberSelect.addEventListener('change', onSelectCapacityChange);
 var body = document.querySelector('body');
 mapPinMain.addEventListener('mousedown', function (evt) {
   evt.preventDefault();
-  var startCoords = {
-    x: evt.clientX,
-    y: evt.clientY
-  };
   var dragged = false;
+  function getCoords(elem) {
+    var box = elem.getBoundingClientRect();
+    return {
+      top: box.top + pageYOffset,
+      left: box.left + pageXOffset
+    };
+  }
+  var coords = getCoords(mapPinMain);
+  var shiftX = evt.pageX - coords.left;
+  var shiftY = evt.pageY - coords.top;
 
   function onMouseMove(moveEvt) {
     moveEvt.preventDefault();
+    var computedStyle = getComputedStyle(document.body);
+    var bodyMarginLeft = parseInt(computedStyle.marginLeft, 10);
+    var limits = {
+      top: COORDINATES_Y_MIN,
+      right: body.offsetWidth + bodyMarginLeft,
+      bottom: COORDINATES_Y_MAX,
+      left: bodyMarginLeft
+    };
     dragged = true;
-    var shift = {
-      x: startCoords.x - moveEvt.clientX,
-      y: startCoords.y - moveEvt.clientY
+    var newLocation = {
+      x: shiftX,
+      y: limits.top - MAIN_PIN_SIZE_Y + shiftY
     };
-    startCoords = {
-      x: moveEvt.clientX,
-      y: moveEvt.clientY
-    };
-    document.querySelector('#address').value = (mapPinMain.offsetLeft - shift.x + MAIN_PIN_SIZE_X / 2) + ', ' + (mapPinMain.offsetTop - shift.y + MAIN_PIN_SIZE_Y);
-    if (mapPinMain.offsetTop - shift.y < COORDINATES_Y_MIN - MAIN_PIN_SIZE_Y) {
-      mapPinMain.style.top = COORDINATES_Y_MIN - MAIN_PIN_SIZE_Y;
-    } else if (mapPinMain.offsetTop - shift.y > COORDINATES_Y_MAX - MAIN_PIN_SIZE_Y) {
-      mapPinMain.style.top = COORDINATES_Y_MAX - MAIN_PIN_SIZE_Y;
-    } else {
-      mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px';
+    if (moveEvt.pageX - shiftX > limits.right - MAIN_PIN_SIZE_X) {
+      newLocation.x = limits.right - MAIN_PIN_SIZE_X + shiftY;
+    } else if (moveEvt.pageX - shiftX > limits.left) {
+      newLocation.x = moveEvt.pageX - bodyMarginLeft;
     }
-    if (mapPinMain.offsetLeft - shift.x < 0) {
-      mapPinMain.style.left = 0;
-    } else if (mapPinMain.offsetLeft - shift.x > body.offsetWidth - MAIN_PIN_SIZE_X) {
-      mapPinMain.style.left = body.offsetWidth - MAIN_PIN_SIZE_X;
-    } else {
-      mapPinMain.style.left = (mapPinMain.offsetLeft - shift.x) + 'px';
+    if (moveEvt.pageY - shiftY > limits.bottom - MAIN_PIN_SIZE_Y) {
+      newLocation.y = limits.bottom - MAIN_PIN_SIZE_Y + shiftY;
+    } else if (moveEvt.pageY - shiftY > limits.top - MAIN_PIN_SIZE_Y) {
+      newLocation.y = moveEvt.pageY;
     }
+    mapPinMain.style.left = newLocation.x - shiftX + 'px';
+    mapPinMain.style.top = newLocation.y - shiftY + 'px';
+    document.querySelector('#address').value = (mapPinMain.offsetLeft + MAIN_PIN_SIZE_X / 2) + ', ' + (mapPinMain.offsetTop + MAIN_PIN_SIZE_Y);
   }
 
   function onMouseUp(upEvt) {
