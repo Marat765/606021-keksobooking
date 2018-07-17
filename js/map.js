@@ -325,7 +325,6 @@ function onSelectCapacityChange(evt) {
 roomNumberSelect.addEventListener('change', onSelectCapacityChange);
 
 
-var body = document.querySelector('body');
 mapPinMain.addEventListener('mousedown', function (evt) {
   evt.preventDefault();
   var dragged = false;
@@ -346,7 +345,7 @@ mapPinMain.addEventListener('mousedown', function (evt) {
     var bodyMarginLeft = parseInt(computedStyle.marginLeft, 10);
     var limits = {
       top: COORDINATES_Y_MIN,
-      right: body.offsetWidth + bodyMarginLeft,
+      right: document.querySelector('.map').offsetWidth,
       bottom: COORDINATES_Y_MAX,
       left: bodyMarginLeft
     };
@@ -355,8 +354,8 @@ mapPinMain.addEventListener('mousedown', function (evt) {
       x: shiftX,
       y: limits.top - MAIN_PIN_SIZE_Y + shiftY
     };
-    if (moveEvt.pageX - shiftX > limits.right - MAIN_PIN_SIZE_X) {
-      newLocation.x = limits.right - MAIN_PIN_SIZE_X + shiftY;
+    if (moveEvt.pageX - shiftX > (limits.right - MAIN_PIN_SIZE_X + bodyMarginLeft)) {
+      newLocation.x = limits.right - MAIN_PIN_SIZE_X + shiftX;
     } else if (moveEvt.pageX - shiftX > limits.left) {
       newLocation.x = moveEvt.pageX - bodyMarginLeft;
     }
