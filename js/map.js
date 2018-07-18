@@ -2,13 +2,15 @@
 
 var similarAds = [];
 var ADS_COUNT = 8;
+var COORDINATES_Y_MIN = 180;
+var COORDINATES_Y_MAX = 670;
+var MAIN_PIN_SIZE_X = 62;
+var MAIN_PIN_SIZE_Y = 84;
 var i;
 
 function getAdvertisement() {
-  var COORDINATES_X_MIN = 280;
+  var COORDINATES_X_MIN = 180;
   var COORDINATES_X_MAX = 1150;
-  var COORDINATES_Y_MIN = 180;
-  var COORDINATES_Y_MAX = 630;
   var PRICE_MIN = 1000;
   var PRICE_MAX = 1000000;
   var ROOMS_MIN = 1;
@@ -81,13 +83,11 @@ function getAdvertisement() {
     similarAds[m].offer.address = similarAds[m].location.x + ', ' + similarAds[m].location.y;
   }
 }
-
 getAdvertisement();
 
 var mapPinTemplate = document.querySelector('template')
   .content
   .querySelector('.map__pin');
-
 function renderPin(ad) {
   var MAP_PIN_SIZE_X = 50;
   var MAP_PIN_SIZE_Y = 70;
@@ -104,7 +104,6 @@ while (i < similarAds.length) {
   fragment.appendChild(renderPin(similarAds[i]));
   i = i + 1;
 }
-
 var mapCard;
 
 function renderCard(pinNumber) {
@@ -148,9 +147,9 @@ function renderCard(pinNumber) {
   mapCard.querySelector('.popup__avatar').src = similarAds[pinNumber].author.avatar;
 }
 
-
-document.querySelector('#address').value = '300, 404';
 var adForm = document.querySelector('.ad-form');
+var mapPinMain = document.querySelector('.map__pin--main');
+adForm.querySelector('#address').value = (parseInt(mapPinMain.style.left, 10) + MAIN_PIN_SIZE_X / 2) + ', ' + (parseInt(mapPinMain.style.top, 10) + MAIN_PIN_SIZE_Y);
 var fieldsets = adForm.querySelectorAll('fieldset');
 for (i = 0; i < fieldsets.length; i++) {
   fieldsets[i].disabled = true;
@@ -178,7 +177,6 @@ function setPageToActiveMode() {
     l = l + 1;
   }
   document.querySelector('.map__pins').appendChild(fragment);
-
   l = 0;
   while (l < ADS_COUNT) {
     var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
@@ -187,13 +185,8 @@ function setPageToActiveMode() {
   }
 }
 
-function setValueOfAddress(evt) {
-  document.querySelector('#address').value = evt.pageX + ', ' + evt.pageY;
-}
-
-document.querySelector('.map__pin--main').addEventListener('mouseup', function (evt) {
+mapPinMain.addEventListener('mouseup', function () {
   setPageToActiveMode();
-  setValueOfAddress(evt);
 });
 
 
@@ -314,12 +307,12 @@ var FOR_2_GUESTS = 1;
 var FOR_3_GUESTS = 2;
 var NOT_FOR_GUESTS = 3;
 function onSelectCapacityChange(evt) {
-  var COMPLIANCE_ROOMS_CAPACITY = {
-    3: [FOR_1_GUEST, FOR_2_GUESTS, FOR_3_GUESTS],
-    2: [NOT_FOR_GUESTS],
-    1: [FOR_3_GUESTS, NOT_FOR_GUESTS],
-    0: [FOR_2_GUESTS, FOR_3_GUESTS, NOT_FOR_GUESTS]
-  };
+  var COMPLIANCE_ROOMS_CAPACITY = [
+    [FOR_2_GUESTS, FOR_3_GUESTS, NOT_FOR_GUESTS],
+    [FOR_3_GUESTS, NOT_FOR_GUESTS],
+    [NOT_FOR_GUESTS],
+    [FOR_1_GUEST, FOR_2_GUESTS, FOR_3_GUESTS]
+  ];
   var capacitySelectOptions = adForm.querySelectorAll('#capacity option');
   for (var j = 0; j < capacitySelectOptions.length; j++) {
     capacitySelectOptions[j].disabled = false;
@@ -330,3 +323,67 @@ function onSelectCapacityChange(evt) {
   }
 }
 roomNumberSelect.addEventListener('change', onSelectCapacityChange);
+
+
+mapPinMain.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
+  var dragged = false;
+  function getCoords(elem) {
+    var box = elem.getBoundingClientRect();
+    return {
+      top: box.top + pageYOffset,
+      left: box.left + pageXOffset
+    };
+  }
+  var coords = getCoords(mapPinMain);
+  var shiftX = evt.pageX - coords.left;
+  var shiftY = evt.pageY - coords.top;
+
+  function onMouseMove(moveEvt) {
+    moveEvt.preventDefault();
+    var computedStyle = getComputedStyle(document.body);
+    var bodyMarginLeft = parseInt(computedStyle.marginLeft, 10);
+    var limits = {
+      top: COORDINATES_Y_MIN,
+      right: document.querySelector('.map').offsetWidth,
+      bottom: COORDINATES_Y_MAX,
+      left: bodyMarginLeft
+    };
+    dragged = true;
+    var newLocation = {
+      x: shiftX,
+      y: limits.top - MAIN_PIN_SIZE_Y + shiftY
+    };
+    if (moveEvt.pageX - shiftX > (limits.right - MAIN_PIN_SIZE_X + bodyMarginLeft)) {
+      newLocation.x = limits.right - MAIN_PIN_SIZE_X + shiftX;
+    } else if (moveEvt.pageX - shiftX > limits.left) {
+      newLocation.x = moveEvt.pageX - bodyMarginLeft;
+    }
+    if (moveEvt.pageY - shiftY > limits.bottom - MAIN_PIN_SIZE_Y) {
+      newLocation.y = limits.bottom - MAIN_PIN_SIZE_Y + shiftY;
+    } else if (moveEvt.pageY - shiftY > limits.top - MAIN_PIN_SIZE_Y) {
+      newLocation.y = moveEvt.pageY;
+    }
+    mapPinMain.style.left = newLocation.x - shiftX + 'px';
+    mapPinMain.style.top = newLocation.y - shiftY + 'px';
+    document.querySelector('#address').value = (mapPinMain.offsetLeft + MAIN_PIN_SIZE_X / 2) + ', ' + (mapPinMain.offsetTop + MAIN_PIN_SIZE_Y);
+  }
+
+  function onMouseUp(upEvt) {
+    upEvt.preventDefault();
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+    if (dragged) {
+      var onClickPreventDefault = function () {
+        evt.preventDefault();
+        mapPinMain.removeEventListener('click', onClickPreventDefault);
+      };
+      mapPinMain.addEventListener('click', onClickPreventDefault);
+    }
+  }
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+});
+
+
