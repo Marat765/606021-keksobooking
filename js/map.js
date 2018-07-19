@@ -34,6 +34,7 @@
       mapPins[l].addEventListener('click', window.card.generateClickHahdler(posterArr[l]));
       l = l + 1;
     }
+    mapPinMain.removeEventListener('mouseup', setPageToActiveMode);
   }
 
   function clickMainPin() {
