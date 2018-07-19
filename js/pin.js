@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var i;
+  window.pin = {};
   var mapPinTemplate = document.querySelector('template')
   .content
   .querySelector('.map__pin');
@@ -15,14 +15,14 @@
     return adElement;
   }
 
-  var fragment = document.createDocumentFragment();
-  i = 0;
-  while (i < window.data.similarAds.length) {
-    fragment.appendChild(renderPin(window.data.similarAds[i]));
-    i = i + 1;
-  }
+  window.pin.createPinsFragment = function (arr) {
+    var fragment = document.createDocumentFragment();
+    var i = 0;
+    while (i < arr.length) {
+      fragment.appendChild(renderPin(arr[i]));
+      i = i + 1;
+    }
 
-  window.pin = {
-    fragment: fragment
+    return fragment;
   };
 })();

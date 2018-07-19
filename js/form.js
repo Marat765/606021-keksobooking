@@ -1,7 +1,16 @@
 'use strict';
 
 (function () {
+  var MAIN_PIN_SIZE_X = 62;
+  var MAIN_PIN_SIZE_Y = 84;
+  var MAIN_PIN_X = 570;
+  var MAIN_PIN_Y = 375;
+  var ESC_KEYCODE = 27;
   var adForm = document.querySelector('.ad-form');
+  var map = document.querySelector('.map');
+  var successPopup = document.querySelector('.success');
+  var mapPinMain = document.querySelector('.map__pin--main');
+
   function CustomValidation() {}
   CustomValidation.prototype = {
   // Установим пустой массив сообщений об ошибках
@@ -134,4 +143,51 @@
     }
   }
   roomNumberSelect.addEventListener('change', onSelectCapacityChange);
+
+  function deactivatePage() {
+    var mapPins = map.querySelectorAll('.map__pin:not(.map__pin--main)');
+    adForm.reset();
+    map.classList.add('map--faded');
+    adForm.classList.add('ad-form--disabled');
+    mapPinMain.style.left = MAIN_PIN_X + 'px';
+    mapPinMain.style.top = MAIN_PIN_Y + 'px';
+    for (var i = 0; i < mapPins.length; i++) {
+      mapPins[i].parentNode.removeChild(mapPins[i]);
+    }
+    window.map.deleteCard();
+    adForm.querySelector('#address').value = (parseInt(mapPinMain.style.left, 10) + MAIN_PIN_SIZE_X / 2) + ', ' + (parseInt(mapPinMain.style.top, 10) + MAIN_PIN_SIZE_Y);
+    var fieldsets = adForm.querySelectorAll('fieldset');
+    for (i = 0; i < fieldsets.length; i++) {
+      fieldsets[i].disabled = true;
+    }
+  }
+
+  function closePopup() {
+    successPopup.classList.add('hidden');
+    document.removeEventListener('keydown', onPopupEscPress);
+  }
+
+  function onPopupEscPress(evt) {
+    if (evt.keyCode === ESC_KEYCODE) {
+      closePopup();
+    }
+  }
+
+  function openPopup() {
+    successPopup.classList.remove('hidden');
+    document.addEventListener('keydown', onPopupEscPress);
+  }
+
+  function onSuccessForm() {
+    openPopup();
+    successPopup.addEventListener('keydown', onPopupEscPress);
+    successPopup.addEventListener('click', closePopup);
+    deactivatePage();
+  }
+
+  adForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.backend.save(new FormData(adForm), onSuccessForm, window.map.onError);
+  });
+
 })();
