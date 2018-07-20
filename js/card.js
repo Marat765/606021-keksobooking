@@ -57,8 +57,9 @@
         photoTemplate.parentNode.removeChild(photoTemplate);
         mapCard.querySelector('.popup__avatar').src = ad.author.avatar;
 
-        var a = mapCard;
-        document.querySelector('.map').insertBefore(a, document.querySelector('.map__filters-container'));
+        document.querySelector('.map').insertBefore(mapCard, document.querySelector('.map__filters-container'));
+        var closeButton = document.querySelector('.map').querySelector('.popup__close');
+        closeButton.addEventListener('click', window.map.deleteCard);
       };
     }
   };

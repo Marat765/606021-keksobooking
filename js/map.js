@@ -3,7 +3,7 @@
 (function () {
   window.map = {};
   var COORDINATES_Y_MIN = 180;
-  var COORDINATES_Y_MAX = 670;
+  var COORDINATES_Y_MAX = 680;
   var MAIN_PIN_SIZE_X = 62;
   var MAIN_PIN_SIZE_Y = 84;
   var i;
@@ -29,13 +29,20 @@
     }
     document.querySelector('.map__pins').appendChild(window.pin.createPinsFragment(posterArr));
     var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    window.map.pins = mapPins;
     l = 0;
     while (l < mapPins.length) {
       mapPins[l].addEventListener('click', window.card.generateClickHahdler(posterArr[l]));
       l = l + 1;
     }
     mapPinMain.removeEventListener('mouseup', setPageToActiveMode);
+    // mapPins[0].classList.add('hidden');
+    // mapPins[0].classList.add('visually-hidden');
+
   }
+
+  // var closeButton = document.querySelector('.popup__close');
+  // closeButton.addEventListener('click', window.map.deleteCard);
 
   function clickMainPin() {
     mapPinMain.addEventListener('mouseup', setPageToActiveMode);
@@ -104,7 +111,6 @@
 
   window.map.deleteCard = function () {
     var previousCard = map.querySelector('.map__card');
-
     if (previousCard) {
       map.removeChild(previousCard);
     }

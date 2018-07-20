@@ -1,11 +1,13 @@
 'use strict';
 
 (function () {
+  // var MAX_PINS_COUNT = 5;
   window.pin = {};
   var mapPinTemplate = document.querySelector('template')
   .content
   .querySelector('.map__pin');
-  function renderPin(ad) {
+
+  window.pin.renderPin = function (ad) {
     var MAP_PIN_SIZE_X = 50;
     var MAP_PIN_SIZE_Y = 70;
     var adElement = mapPinTemplate.cloneNode(true);
@@ -13,13 +15,13 @@
     adElement.querySelector('img').src = ad.author.avatar;
     adElement.querySelector('img').alt = ad.offer.title;
     return adElement;
-  }
+  };
 
   window.pin.createPinsFragment = function (arr) {
     var fragment = document.createDocumentFragment();
     var i = 0;
     while (i < arr.length) {
-      fragment.appendChild(renderPin(arr[i]));
+      fragment.appendChild(window.pin.renderPin(arr[i]));
       i = i + 1;
     }
 

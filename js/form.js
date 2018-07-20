@@ -61,6 +61,7 @@
     var inputs = document.querySelectorAll('.ad-form input');
     for (var j = 0; j < inputs.length; j++) {
       var input = inputs[j];
+      input.style.cssText = '';
       // Проверим валидность поля, используя встроенную в JavaScript функцию checkValidity()
       if (!input.checkValidity()) {
         var inputCustomValidation = new CustomValidation(); // Создадим объект CustomValidation
@@ -71,6 +72,7 @@
         var customValidityMessageForHTML = inputCustomValidation.getInvaliditiesForHTML();
         input.insertAdjacentHTML('afterend', '<p class="error-message">' + customValidityMessageForHTML + '</p>');
         stopSubmit = true;
+        input.style.cssText = 'border: 1px solid red; box-shadow: 0 0 3px red;';
       }
     }
     var index = adForm.querySelector('#capacity').selectedIndex;
