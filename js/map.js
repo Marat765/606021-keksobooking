@@ -124,6 +124,9 @@
     node.style.fontSize = '24px';
     node.textContent = errorMessage;
     document.body.insertAdjacentElement('afterbegin', node);
+    setTimeout(function () {
+      document.body.children[0].remove();
+    }, 10000);
   };
 
   function onSuccess(cardsArray) {
