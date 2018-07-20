@@ -23,16 +23,17 @@
       }
       adElement.classList.add('map__pin--active');
       activePin = adElement;
-      // window.card.fillCard(point);
-      document.addEventListener('keydown', function (evt) {
-        if (evt.keyCode === ESC_KEYCODE) {
-          window.map.deleteCard();
-        }
-
-      });
+      document.addEventListener('keydown', onDocumentKeydown);
     });
     return adElement;
   };
+
+  function onDocumentKeydown(evt) {
+    if (evt.keyCode === ESC_KEYCODE) {
+      window.map.deleteCard();
+      document.removeEventListener('keydown', onDocumentKeydown);
+    }
+  }
 
   window.pin.createPinsFragment = function (arr) {
     var fragment = document.createDocumentFragment();
