@@ -1,22 +1,25 @@
 'use strict';
 
 (function () {
-  var ADS_COUNT = 8;
+  window.map = {};
   var COORDINATES_Y_MIN = 180;
-  var COORDINATES_Y_MAX = 670;
+  var COORDINATES_Y_MAX = 680;
   var MAIN_PIN_SIZE_X = 62;
   var MAIN_PIN_SIZE_Y = 84;
   var i;
+  var posterArr;
 
   var adForm = document.querySelector('.ad-form');
   var mapPinMain = document.querySelector('.map__pin--main');
+  var map = document.querySelector('.map');
+
   adForm.querySelector('#address').value = (parseInt(mapPinMain.style.left, 10) + MAIN_PIN_SIZE_X / 2) + ', ' + (parseInt(mapPinMain.style.top, 10) + MAIN_PIN_SIZE_Y);
   var fieldsets = adForm.querySelectorAll('fieldset');
   for (i = 0; i < fieldsets.length; i++) {
     fieldsets[i].disabled = true;
   }
 
-  function setPageToActiveMode() {
+  window.map.setPageToActiveMode = function () {
     document.querySelector('.map').classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
     var l = 0;
@@ -24,18 +27,24 @@
       fieldsets[l].disabled = false;
       l = l + 1;
     }
-    document.querySelector('.map__pins').appendChild(window.pin.fragment);
+    document.querySelector('.map__pins').appendChild(window.pin.createPinsFragment(posterArr));
+    var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    window.map.pins = mapPins;
     l = 0;
-    while (l < ADS_COUNT) {
-      var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-      mapPins[l].addEventListener('click', window.card.generateClickHahdler(l));
+    while (l < mapPins.length) {
+      mapPins[l].addEventListener('click', window.card.generateClickHahdler(posterArr[l]));
       l = l + 1;
     }
-  }
+    for (i = 0; i < 5; i++) {
+      mapPins[i].classList.add('hidden');
+    }
+    mapPinMain.removeEventListener('mouseup', window.map.setPageToActiveMode);
+  };
 
-  mapPinMain.addEventListener('mouseup', function () {
-    setPageToActiveMode();
-  });
+
+  function clickMainPin() {
+    mapPinMain.addEventListener('mouseup', window.map.setPageToActiveMode);
+  }
 
   mapPinMain.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
@@ -97,4 +106,34 @@
     document.addEventListener('mousemove', onDocumentMouseMove);
     document.addEventListener('mouseup', onDocumentMouseUp);
   });
+
+  window.map.deleteCard = function () {
+    var previousCard = map.querySelector('.map__card');
+    if (previousCard) {
+      map.removeChild(previousCard);
+    }
+  };
+
+  window.map.onError = function (errorMessage) {
+    var node = document.createElement('div');
+    node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: rgba(255, 50, 0, 0.7); top: 200px; left: 50%; transform: translateX(-50%); box-shadow: 0 0 50px rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 50, 0, 0.7); border-radius: 20px';
+    node.style.position = 'fixed';
+    node.style.padding = '50px 30px';
+    node.style.fontfamily = 'Arial';
+    node.style.color = 'white';
+    node.style.fontSize = '24px';
+    node.textContent = errorMessage;
+    document.body.insertAdjacentElement('afterbegin', node);
+    setTimeout(function () {
+      document.body.children[0].remove();
+    }, 10000);
+  };
+
+  function onSuccess(cardsArray) {
+    posterArr = cardsArray;
+    clickMainPin();
+  }
+
+  window.backend.load(onSuccess, window.map.onError);
+
 })();
