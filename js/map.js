@@ -35,14 +35,12 @@
       mapPins[l].addEventListener('click', window.card.generateClickHahdler(posterArr[l]));
       l = l + 1;
     }
+    for (i = 0; i < 5; i++) {
+      mapPins[i].classList.add('hidden');
+    }
     mapPinMain.removeEventListener('mouseup', setPageToActiveMode);
-    // mapPins[0].classList.add('hidden');
-    // mapPins[0].classList.add('visually-hidden');
-
   }
 
-  // var closeButton = document.querySelector('.popup__close');
-  // closeButton.addEventListener('click', window.map.deleteCard);
 
   function clickMainPin() {
     mapPinMain.addEventListener('mouseup', setPageToActiveMode);
