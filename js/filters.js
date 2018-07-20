@@ -61,7 +61,7 @@
     }
   }
 
-  function filteredByPrice(data) {
+  function filterByPrice(data) {
     switch (housingPrice.value) {
       case 'low':
         return data.offer.price < priceParams.LOW;
@@ -73,8 +73,7 @@
     return false;
   }
 
-  // фильтр удобств
-  function filteredByFeatures(data) {
+  function filterByFeatures(data) {
     for (var i = 0; i < filters.features.length; i++) {
       if (data.offer.features.indexOf(filters.features[i]) === -1) {
         return false;
@@ -85,13 +84,12 @@
 
   function filterData(data) {
     return ((housingType.value === 'any') ? true : (data.offer.type === housingType.value)) &&
-      ((housingPrice.value === 'any') ? true : filteredByPrice(data)) &&
+      ((housingPrice.value === 'any') ? true : filterByPrice(data)) &&
       ((housingRooms.value === 'any') ? true : (data.offer.rooms === parseInt(housingRooms.value, 10))) &&
       ((housingGuests.value === 'any') ? true : (data.offer.guests === parseInt(housingGuests.value, 10))) &&
-      filteredByFeatures(data);
+      filterByFeatures(data);
   }
 
-  // массив длиною MAX_PINS_COUNT
   function getFilteredData(ads) {
 
     var newData = ads.filter(filterData);
