@@ -1,25 +1,29 @@
 'use strict';
 
 (function () {
-  window.map = {};
-  var COORDINATES_Y_MIN = 180;
-  var COORDINATES_Y_MAX = 680;
+  var COORDINATES_Y_MIN = 130;
+  var COORDINATES_Y_MAX = 630;
   var MAIN_PIN_SIZE_X = 62;
   var MAIN_PIN_SIZE_Y = 84;
+
+  window.map = {};
   var i;
-  var posterArr;
+  // var posterArr;
 
   var adForm = document.querySelector('.ad-form');
   var mapPinMain = document.querySelector('.map__pin--main');
   var map = document.querySelector('.map');
 
+  function checkMapFaded() {
+    return map.classList.contains('map--faded');
+  }
   adForm.querySelector('#address').value = (parseInt(mapPinMain.style.left, 10) + MAIN_PIN_SIZE_X / 2) + ', ' + (parseInt(mapPinMain.style.top, 10) + MAIN_PIN_SIZE_Y);
   var fieldsets = adForm.querySelectorAll('fieldset');
   for (i = 0; i < fieldsets.length; i++) {
     fieldsets[i].disabled = true;
   }
 
-  window.map.setPageToActiveMode = function () {
+  function setPageToActiveMode() {
     document.querySelector('.map').classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
     var l = 0;
@@ -27,23 +31,27 @@
       fieldsets[l].disabled = false;
       l = l + 1;
     }
-    document.querySelector('.map__pins').appendChild(window.pin.createPinsFragment(posterArr));
+    document.querySelector('.map__pins').appendChild(window.pin.createPinsFragment(window.map.posterArr));
     var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-    window.map.pins = mapPins;
     l = 0;
     while (l < mapPins.length) {
-      mapPins[l].addEventListener('click', window.card.generateClickHahdler(posterArr[l]));
+      mapPins[l].addEventListener('click', window.card.generateClickHandler(window.map.posterArr[l]));
       l = l + 1;
     }
-    for (i = 0; i < 5; i++) {
-      mapPins[i].classList.add('hidden');
+    // function list() {
+    //   return Array.prototype.slice.call(arguments, 0);
+    // }
+    // var list1 = list(1, 2, 3);
+    // window.map.pins = list(mapPins);
+    for (i = 4; i < mapPins.length; i++) {
+      mapPins[i].remove();
     }
-    mapPinMain.removeEventListener('mouseup', window.map.setPageToActiveMode);
-  };
-
-
-  function clickMainPin() {
-    mapPinMain.addEventListener('mouseup', window.map.setPageToActiveMode);
+    // for (l = 0; l < mapPins.length; l++) {
+    //   mapPins[l].remove();
+    // }
+    // for (i = 0; i < 5; i++) {
+    //   mapPins[i].classList.add('hidden');
+    // }
   }
 
   mapPinMain.addEventListener('mousedown', function (evt) {
@@ -73,16 +81,16 @@
       dragged = true;
       var newLocation = {
         x: shiftX,
-        y: limits.top - MAIN_PIN_SIZE_Y + shiftY
+        y: limits.top + shiftY
       };
       if (moveEvt.pageX - shiftX > (limits.right - MAIN_PIN_SIZE_X + bodyMarginLeft)) {
         newLocation.x = limits.right - MAIN_PIN_SIZE_X + shiftX;
       } else if (moveEvt.pageX - shiftX > limits.left) {
         newLocation.x = moveEvt.pageX - bodyMarginLeft;
       }
-      if (moveEvt.pageY - shiftY > limits.bottom - MAIN_PIN_SIZE_Y) {
-        newLocation.y = limits.bottom - MAIN_PIN_SIZE_Y + shiftY;
-      } else if (moveEvt.pageY - shiftY > limits.top - MAIN_PIN_SIZE_Y) {
+      if (moveEvt.pageY - shiftY > limits.bottom) {
+        newLocation.y = limits.bottom + shiftY;
+      } else if (moveEvt.pageY - shiftY > limits.top) {
         newLocation.y = moveEvt.pageY;
       }
       mapPinMain.style.left = newLocation.x - shiftX + 'px';
@@ -92,6 +100,9 @@
 
     function onDocumentMouseUp(upEvt) {
       upEvt.preventDefault();
+      if (checkMapFaded()) {
+        window.backend.load(onSuccess, window.map.onError);
+      }
       document.removeEventListener('mousemove', onDocumentMouseMove);
       document.removeEventListener('mouseup', onDocumentMouseUp);
       if (dragged) {
@@ -107,7 +118,7 @@
     document.addEventListener('mouseup', onDocumentMouseUp);
   });
 
-  window.map.deleteCard = function () {
+  window.map.onCloseButtonClick = function () {
     var previousCard = map.querySelector('.map__card');
     if (previousCard) {
       map.removeChild(previousCard);
@@ -130,10 +141,12 @@
   };
 
   function onSuccess(cardsArray) {
-    posterArr = cardsArray;
-    clickMainPin();
+    window.map.posterArr = cardsArray;
+    window.card.generateCli = function () {
+      return function () {
+        window.map.ddd = window.map.posterArr;
+      };
+    };
+    setPageToActiveMode();
   }
-
-  window.backend.load(onSuccess, window.map.onError);
-
 })();

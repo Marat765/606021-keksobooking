@@ -20,7 +20,7 @@
   var FOR_2_GUESTS = 1;
   var FOR_3_GUESTS = 2;
   var NOT_FOR_GUESTS = 3;
-  var COMPLIANCE_ROOMS_CAPACITY = [
+  var COMPLIANCES_ROOMS_CAPACITIES = [
     [FOR_2_GUESTS, FOR_3_GUESTS, NOT_FOR_GUESTS],
     [FOR_3_GUESTS, NOT_FOR_GUESTS],
     [NOT_FOR_GUESTS],
@@ -44,17 +44,17 @@
         var max = input.getAttribute('max');
         this.addInvalidity('Максимальное значение ' + max);
       }
+      if (validity.tooShort) {
+        var minLength = input.getAttribute('minlength');
+        this.addInvalidity('Минимальная длина ' + minLength);
+      }
       if (validity.rangeUnderflow) {
         var min = input.getAttribute('min');
         this.addInvalidity('Минимальное значение ' + min);
       }
-      if (validity.tooShort) {
-        var minlength = input.getAttribute('minlength');
-        this.addInvalidity('Минимальная длина ' + minlength);
-      }
       if (validity.tooLong) {
-        var maxlength = input.getAttribute('maxlength');
-        this.addInvalidity('Максимальная длина ' + maxlength);
+        var maxLength = input.getAttribute('maxlength');
+        this.addInvalidity('Максимальная длина ' + maxLength);
       }
       if (validity.valueMissing) {
         this.addInvalidity('Обязательно для заполнения');
@@ -97,7 +97,7 @@
       }
     }
     var index = adForm.querySelector('#capacity').selectedIndex;
-    if (adForm.querySelector('#capacity').options[index].disabled === true) {
+    if (adForm.querySelector('#capacity').options[index].disabled) {
       stopSubmit = true;
       adForm.querySelector('#capacity').insertAdjacentHTML('afterend', '<p class="error-message">Измените количество мест</p>');
       adForm.querySelector('#capacity').style.cssText = 'border: 1px solid red; box-shadow: 0 0 3px red;';
@@ -124,6 +124,8 @@
   var timeIn = adForm.querySelector('#timein');
   var timeOut = adForm.querySelector('#timeout');
   function onSelectTimeChange(evt) {
+    // ((evt.target === timeIn) ? (timeOut.selectedIndex = evt.target.selectedIndex) : (timeIn.selectedIndex = evt.target.selectedIndex))
+  // }
     if (evt.target === timeIn) {
       timeOut.selectedIndex = evt.target.selectedIndex;
     } else {
@@ -140,7 +142,7 @@
     for (var j = 0; j < capacitySelectOptions.length; j++) {
       capacitySelectOptions[j].disabled = false;
     }
-    var capacities = COMPLIANCE_ROOMS_CAPACITY[evt.target.selectedIndex];
+    var capacities = COMPLIANCES_ROOMS_CAPACITIES[evt.target.selectedIndex];
     for (j = 0; j < capacities.length; j++) {
       capacitySelect.options[capacities[j]].disabled = true;
     }
@@ -155,15 +157,20 @@
     mapPinMain.style.left = MAIN_PIN_X + 'px';
     mapPinMain.style.top = MAIN_PIN_Y + 'px';
     for (var i = 0; i < mapPins.length; i++) {
-      mapPins[i].parentNode.removeChild(mapPins[i]);
+      mapPins[i].remove();
     }
-    window.map.deleteCard();
+    window.map.onCloseButtonClick();
     adForm.querySelector('#address').value = (parseInt(mapPinMain.style.left, 10) + MAIN_PIN_SIZE_X / 2) + ', ' + (parseInt(mapPinMain.style.top, 10) + MAIN_PIN_SIZE_Y);
     var fieldsets = adForm.querySelectorAll('fieldset');
     for (i = 0; i < fieldsets.length; i++) {
       fieldsets[i].disabled = true;
     }
-    mapPinMain.addEventListener('mouseup', window.map.setPageToActiveMode);
+    var inputs = document.querySelectorAll('.ad-form input');
+    for (i = 0; i < inputs.length; i++) {
+      var input = inputs[i];
+      input.style.cssText = '';
+    }
+    adForm.querySelector('#capacity').style.cssText = '';
   }
 
   function onSuccessPopupClick() {

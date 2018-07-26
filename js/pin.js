@@ -11,26 +11,26 @@
   .querySelector('.map__pin');
   var activePin = null;
 
-  window.pin.renderPin = function (ad) {
-    var adElement = mapPinTemplate.cloneNode(true);
-    adElement.style = 'left: ' + (ad.location.x - MAP_PIN_SIZE_X / 2) + 'px; top: ' + (ad.location.y - MAP_PIN_SIZE_Y) + 'px;';
-    adElement.querySelector('img').src = ad.author.avatar;
-    adElement.querySelector('img').alt = ad.offer.title;
+  function renderPin(ad) {
+    var adClone = mapPinTemplate.cloneNode(true);
+    adClone.style = 'left: ' + (ad.location.x - MAP_PIN_SIZE_X / 2) + 'px; top: ' + (ad.location.y - MAP_PIN_SIZE_Y) + 'px;';
+    adClone.querySelector('img').src = ad.author.avatar;
+    adClone.querySelector('img').alt = ad.offer.title;
 
-    adElement.addEventListener('click', function () {
+    adClone.addEventListener('click', function () {
       if (activePin) {
         activePin.classList.remove('map__pin--active');
       }
-      adElement.classList.add('map__pin--active');
-      activePin = adElement;
+      adClone.classList.add('map__pin--active');
+      activePin = adClone;
       document.addEventListener('keydown', onDocumentKeydown);
     });
-    return adElement;
-  };
+    return adClone;
+  }
 
   function onDocumentKeydown(evt) {
     if (evt.keyCode === ESC_KEYCODE) {
-      window.map.deleteCard();
+      window.map.onCloseButtonClick();
       document.removeEventListener('keydown', onDocumentKeydown);
     }
   }
@@ -39,10 +39,36 @@
     var fragment = document.createDocumentFragment();
     var i = 0;
     while (i < arr.length) {
-      fragment.appendChild(window.pin.renderPin(arr[i]));
+      fragment.appendChild(renderPin(arr[i]));
       i = i + 1;
     }
 
     return fragment;
   };
+
+  // var template = document.querySelector('template');
+
+  // var templatePin = template.content.querySelector('.map__pin');
+  // // создаёт pin
+  // window.pin = {
+  //   renderPin: function (point) {
+  //     var pin = templatePin.cloneNode(true);
+  //     var pinWidth = templatePin.offsetWidth;
+  //     var pinHeight = templatePin.offsetHeight;
+  //     pin.style.left = point.location.x - pinWidth / 2 + 'px';
+  //     pin.style.top = point.location.y - pinHeight + 'px';
+  //     pin.querySelector('img').src = point.author.avatar;
+  //     pin.querySelector('img').alt = point.offer.title;
+  //     pin.addEventListener('click', function () {
+  //       if (activePin) {
+  //         activePin.classList.remove('map__pin--active');
+  //       }
+  //       pin.classList.add('map__pin--active');
+  //       activePin = pin;
+  //       window.card.fillCard(point);
+  //       document.addEventListener('keydown', window.card.closeEscCardHandler);
+  //     });
+  //     return pin;
+  //   }
+  // };
 })();
