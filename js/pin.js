@@ -35,7 +35,7 @@
     }
   }
 
-  window.pin.createPinsFragment = function (arr) {
+  window.pin.renderPinsFragment = function (arr) {
     var fragment = document.createDocumentFragment();
     var i = 0;
     while (i < arr.length) {
@@ -43,32 +43,5 @@
       i = i + 1;
     }
     document.querySelector('.map__pins').appendChild(fragment);
-    // return fragment;
   };
-
-  // var template = document.querySelector('template');
-
-  // var templatePin = template.content.querySelector('.map__pin');
-  // // создаёт pin
-  // window.pin = {
-  //   renderPin: function (point) {
-  //     var pin = templatePin.cloneNode(true);
-  //     var pinWidth = templatePin.offsetWidth;
-  //     var pinHeight = templatePin.offsetHeight;
-  //     pin.style.left = point.location.x - pinWidth / 2 + 'px';
-  //     pin.style.top = point.location.y - pinHeight + 'px';
-  //     pin.querySelector('img').src = point.author.avatar;
-  //     pin.querySelector('img').alt = point.offer.title;
-  //     pin.addEventListener('click', function () {
-  //       if (activePin) {
-  //         activePin.classList.remove('map__pin--active');
-  //       }
-  //       pin.classList.add('map__pin--active');
-  //       activePin = pin;
-  //       window.card.fillCard(point);
-  //       document.addEventListener('keydown', window.card.closeEscCardHandler);
-  //     });
-  //     return pin;
-  //   }
-  // };
 })();

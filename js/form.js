@@ -124,8 +124,6 @@
   var timeIn = adForm.querySelector('#timein');
   var timeOut = adForm.querySelector('#timeout');
   function onSelectTimeChange(evt) {
-    // ((evt.target === timeIn) ? (timeOut.selectedIndex = evt.target.selectedIndex) : (timeIn.selectedIndex = evt.target.selectedIndex))
-  // }
     if (evt.target === timeIn) {
       timeOut.selectedIndex = evt.target.selectedIndex;
     } else {
@@ -153,6 +151,7 @@
     var mapPins = map.querySelectorAll('.map__pin:not(.map__pin--main)');
     adForm.reset();
     map.classList.add('map--faded');
+    map.querySelector('.map__filters').classList.add('visually-hidden');
     adForm.classList.add('ad-form--disabled');
     mapPinMain.style.left = MAIN_PIN_X + 'px';
     mapPinMain.style.top = MAIN_PIN_Y + 'px';
@@ -171,6 +170,7 @@
       input.style.cssText = '';
     }
     adForm.querySelector('#capacity').style.cssText = '';
+    window.map.loadPage();
   }
 
   function onSuccessPopupClick() {

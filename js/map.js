@@ -8,53 +8,17 @@
 
   window.map = {};
   var i;
-  // var posterArr;
 
   var adForm = document.querySelector('.ad-form');
   var mapPinMain = document.querySelector('.map__pin--main');
   var map = document.querySelector('.map');
 
-  // function checkMapFaded() {
-  //   return map.classList.contains('map--faded');
-  // }
   adForm.querySelector('#address').value = (parseInt(mapPinMain.style.left, 10) + MAIN_PIN_SIZE_X / 2) + ', ' + (parseInt(mapPinMain.style.top, 10) + MAIN_PIN_SIZE_Y);
   var fieldsets = adForm.querySelectorAll('fieldset');
   for (i = 0; i < fieldsets.length; i++) {
     fieldsets[i].disabled = true;
   }
-
-  window.map.setPageToActiveMode = function () {
-    document.querySelector('.map').classList.remove('map--faded');
-    adForm.classList.remove('ad-form--disabled');
-    var l = 0;
-    while (l < fieldsets.length) {
-      fieldsets[l].disabled = false;
-      l = l + 1;
-    }
-    var data = window.filters.updateData();
-    // document.querySelector('.map__pins').appendChild(window.pin.createPinsFragment(window.map.posterArr));
-    window.pin.createPinsFragment(data);
-    var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-    l = 0;
-    while (l < mapPins.length) {
-      mapPins[l].addEventListener('click', window.card.generateClickHandler(data[l]));
-      l = l + 1;
-    }
-    // function list() {
-    //   return Array.prototype.slice.call(arguments, 0);
-    // }
-    // var list1 = list(1, 2, 3);
-    // window.map.pins = list(mapPins);
-    // for (i = 6; i < mapPins.length; i++) {
-    //   mapPins[i].remove();
-    // }
-    // for (l = 0; l < mapPins.length; l++) {
-    //   mapPins[l].remove();
-    // }
-    // for (i = 0; i < 5; i++) {
-    //   mapPins[i].classList.add('hidden');
-    // }
-  };
+  map.querySelector('.map__filters').classList.add('visually-hidden');
 
   // var dragged = false;
 
@@ -102,34 +66,14 @@
       document.querySelector('#address').value = (mapPinMain.offsetLeft + MAIN_PIN_SIZE_X / 2) + ', ' + (mapPinMain.offsetTop + MAIN_PIN_SIZE_Y);
     }
 
-    // function onDocumentMouseUp(upEvt) {
-    //   upEvt.preventDefault();
-    //   if (checkMapFaded()) {
-    //     // window.backend.load(onSuccess, window.map.onError);
-    //     window.backend.load(window.filters.onLoadSuccess, window.map.onError);
-    //   }
-    //   document.removeEventListener('mousemove', onDocumentMouseMove);
-    //   document.removeEventListener('mouseup', onDocumentMouseUp);
-    //   if (dragged) {
-    //     var onClickPreventDefault = function () {
-    //       evt.preventDefault();
-    //       mapPinMain.removeEventListener('click', onClickPreventDefault);
-    //     };
-    //     mapPinMain.addEventListener('click', onClickPreventDefault);
-    //   }
-    // }
-
-    var onMouseUp = function (upEvt) {
+    function onDocumentMouseUp(upEvt) {
       upEvt.preventDefault();
-
       document.removeEventListener('mousemove', onDocumentMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-    };
+      document.removeEventListener('mouseup', onDocumentMouseUp);
+    }
 
-    document.addEventListener('mouseup', onMouseUp);
-
+    document.addEventListener('mouseup', onDocumentMouseUp);
     document.addEventListener('mousemove', onDocumentMouseMove);
-    // document.addEventListener('mouseup', onPinMainMouseUp);
   });
 
   window.map.onCloseButtonClick = function () {
@@ -154,9 +98,10 @@
     }, 10000);
   };
 
-  function onPinMainMouseUp(upEvt) {
+  function onMapPinMainMouseUp(upEvt) {
     upEvt.preventDefault();
     document.querySelector('.map').classList.remove('map--faded');
+    map.querySelector('.map__filters').classList.remove('visually-hidden');
     adForm.classList.remove('ad-form--disabled');
     var l = 0;
     while (l < fieldsets.length) {
@@ -164,16 +109,7 @@
       l = l + 1;
     }
     window.backend.load(window.filters.onLoadSuccess, window.map.onError);
-    var data = window.filters.updateData();
-    // document.querySelector('.map__pins').appendChild(window.pin.createPinsFragment(window.map.posterArr));
-    window.pin.createPinsFragment(data);
-    var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-    l = 0;
-    while (l < mapPins.length) {
-      mapPins[l].addEventListener('click', window.card.generateClickHandler(data[l]));
-      l = l + 1;
-    }
-    mapPinMain.removeEventListener('mouseup', onPinMainMouseUp);
+    mapPinMain.removeEventListener('mouseup', onMapPinMainMouseUp);
     // if (dragged) {
     //   var onClickPreventDefault = function () {
     //     upEvt.preventDefault();
@@ -183,18 +119,8 @@
     // }
   }
 
-  var loadPage = function () {
-    mapPinMain.addEventListener('mouseup', onPinMainMouseUp);
+  window.map.loadPage = function () {
+    mapPinMain.addEventListener('mouseup', onMapPinMainMouseUp);
   };
-  loadPage();
-
-  // function onSuccess(cardsArray) {
-  //   window.map.posterArr = cardsArray;
-  //   // window.card.generateCli = function () {
-  //   //   return function () {
-  //   //     window.map.ddd = window.map.posterArr;
-  //   //   };
-  //   // };
-  //   setPageToActiveMode();
-  // }
+  window.map.loadPage();
 })();
