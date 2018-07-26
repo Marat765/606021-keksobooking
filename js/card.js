@@ -10,7 +10,8 @@
 
   var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
   var img = cardTemplate.cloneNode(true).querySelector('.popup__photo');
-  var mapCard = document.querySelector('.map').querySelector('.map__card');
+  var map = document.querySelector('.map');
+  var mapCard = map.querySelector('.map__card');
 
   function renderFeatures(advData) {
     var mapFeatures = mapCard.querySelector('.popup__features');
@@ -61,8 +62,8 @@
         photoTemplate.parentNode.removeChild(photoTemplate);
         mapCard.querySelector('.popup__avatar').src = ad.author.avatar;
 
-        document.querySelector('.map').insertBefore(mapCard, document.querySelector('.map__filters-container'));
-        var closeButton = document.querySelector('.map').querySelector('.popup__close');
+        map.insertBefore(mapCard, document.querySelector('.map__filters-container'));
+        var closeButton = map.querySelector('.popup__close');
         closeButton.addEventListener('click', window.map.onCloseButtonClick);
       };
     }

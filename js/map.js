@@ -20,11 +20,8 @@
   }
   map.querySelector('.map__filters').classList.add('visually-hidden');
 
-  // var dragged = false;
-
   mapPinMain.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
-    // dragged = false;
     function getCoords(elem) {
       var box = elem.getBoundingClientRect();
       return {
@@ -42,11 +39,10 @@
       var bodyMarginLeft = parseInt(computedStyle.marginLeft, 10);
       var limits = {
         top: COORDINATES_Y_MIN,
-        right: document.querySelector('.map').offsetWidth,
+        right: map.offsetWidth,
         bottom: COORDINATES_Y_MAX,
         left: bodyMarginLeft
       };
-      // dragged = true;
       var newLocation = {
         x: shiftX,
         y: limits.top + shiftY
@@ -79,7 +75,7 @@
   window.map.onCloseButtonClick = function () {
     var previousCard = map.querySelector('.map__card');
     if (previousCard) {
-      map.removeChild(previousCard);
+      previousCard.remove();
     }
   };
 
@@ -100,7 +96,7 @@
 
   function onMapPinMainMouseUp(upEvt) {
     upEvt.preventDefault();
-    document.querySelector('.map').classList.remove('map--faded');
+    map.classList.remove('map--faded');
     map.querySelector('.map__filters').classList.remove('visually-hidden');
     adForm.classList.remove('ad-form--disabled');
     var l = 0;
@@ -110,13 +106,6 @@
     }
     window.backend.load(window.filters.onLoadSuccess, window.map.onError);
     mapPinMain.removeEventListener('mouseup', onMapPinMainMouseUp);
-    // if (dragged) {
-    //   var onClickPreventDefault = function () {
-    //     upEvt.preventDefault();
-    //     mapPinMain.removeEventListener('click', onClickPreventDefault);
-    //   };
-    //   mapPinMain.addEventListener('click', onClickPreventDefault);
-    // }
   }
 
   window.map.loadPage = function () {

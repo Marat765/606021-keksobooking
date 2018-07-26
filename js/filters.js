@@ -21,7 +21,7 @@
   function onLoadSuccess(data) {
     newData = data;
     initialRenderingData = newData.slice(0, MAX_PINS_COUNT);
-    window.pin.renderPinsFragment(initialRenderingData);
+    window.pin.renderFragment(initialRenderingData);
     var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
     var l = 0;
     while (l < mapPins.length) {
@@ -87,7 +87,7 @@
       pinsCount = updatedData.length;
     }
     var filteredData = updatedData.slice(0, pinsCount);
-    window.pin.renderPinsFragment(filteredData);
+    window.pin.renderFragment(filteredData);
     mapPins = map.querySelectorAll('.map__pin:not(.map__pin--main)');
     var l = 0;
     while (l < mapPins.length) {

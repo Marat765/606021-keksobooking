@@ -35,7 +35,7 @@
     }
   }
 
-  window.pin.renderPinsFragment = function (arr) {
+  window.pin.renderFragment = function (arr) {
     var fragment = document.createDocumentFragment();
     var i = 0;
     while (i < arr.length) {

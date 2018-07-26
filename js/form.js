@@ -31,6 +31,7 @@
   var map = document.querySelector('.map');
   var successPopup = document.querySelector('.success');
   var mapPinMain = document.querySelector('.map__pin--main');
+  var capacitySelect = adForm.querySelector('#capacity');
 
   function CustomValidation() {}
   CustomValidation.prototype = {
@@ -77,7 +78,7 @@
   var submit = document.querySelector('.ad-form__submit');
   submit.addEventListener('click', function (evt) {
   // Пройдёмся по всем полям
-    adForm.querySelector('#capacity').style.cssText = '';
+    capacitySelect.style.cssText = '';
     var stopSubmit = false;
     var inputs = document.querySelectorAll('.ad-form input');
     for (var j = 0; j < inputs.length; j++) {
@@ -96,11 +97,11 @@
         input.style.cssText = 'border: 1px solid red; box-shadow: 0 0 3px red;';
       }
     }
-    var index = adForm.querySelector('#capacity').selectedIndex;
-    if (adForm.querySelector('#capacity').options[index].disabled) {
+    var index = capacitySelect.selectedIndex;
+    if (capacitySelect.options[index].disabled) {
       stopSubmit = true;
-      adForm.querySelector('#capacity').insertAdjacentHTML('afterend', '<p class="error-message">Измените количество мест</p>');
-      adForm.querySelector('#capacity').style.cssText = 'border: 1px solid red; box-shadow: 0 0 3px red;';
+      capacitySelect.insertAdjacentHTML('afterend', '<p class="error-message">Измените количество мест</p>');
+      capacitySelect.style.cssText = 'border: 1px solid red; box-shadow: 0 0 3px red;';
     }
     setTimeout(function () {
       var errorMessages = adForm.querySelectorAll('.error-message');
@@ -134,7 +135,6 @@
   timeOut.addEventListener('change', onSelectTimeChange);
 
   var roomNumberSelect = adForm.querySelector('#room_number');
-  var capacitySelect = adForm.querySelector('#capacity');
   function onSelectCapacityChange(evt) {
     var capacitySelectOptions = adForm.querySelectorAll('#capacity option');
     for (var j = 0; j < capacitySelectOptions.length; j++) {
@@ -169,16 +169,16 @@
       var input = inputs[i];
       input.style.cssText = '';
     }
-    adForm.querySelector('#capacity').style.cssText = '';
+    capacitySelect.style.cssText = '';
     window.map.loadPage();
   }
 
   function onSuccessPopupClick() {
     successPopup.classList.add('hidden');
-    document.removeEventListener('keydown', onPopupEscPress);
+    document.removeEventListener('keydown', onSuccessPopupEscPress);
   }
 
-  function onPopupEscPress(evt) {
+  function onSuccessPopupEscPress(evt) {
     if (evt.keyCode === ESC_KEYCODE) {
       onSuccessPopupClick();
     }
@@ -186,12 +186,12 @@
 
   function openPopup() {
     successPopup.classList.remove('hidden');
-    document.addEventListener('keydown', onPopupEscPress);
+    document.addEventListener('keydown', onSuccessPopupEscPress);
   }
 
   function onSuccessForm() {
     openPopup();
-    successPopup.addEventListener('keydown', onPopupEscPress);
+    successPopup.addEventListener('keydown', onSuccessPopupEscPress);
     successPopup.addEventListener('click', onSuccessPopupClick);
     deactivatePage();
   }
