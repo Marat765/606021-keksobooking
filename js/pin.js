@@ -42,8 +42,8 @@
       fragment.appendChild(renderPin(arr[i]));
       i = i + 1;
     }
-
-    return fragment;
+    document.querySelector('.map__pins').appendChild(fragment);
+    // return fragment;
   };
 
   // var template = document.querySelector('template');

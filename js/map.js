@@ -14,16 +14,16 @@
   var mapPinMain = document.querySelector('.map__pin--main');
   var map = document.querySelector('.map');
 
-  function checkMapFaded() {
-    return map.classList.contains('map--faded');
-  }
+  // function checkMapFaded() {
+  //   return map.classList.contains('map--faded');
+  // }
   adForm.querySelector('#address').value = (parseInt(mapPinMain.style.left, 10) + MAIN_PIN_SIZE_X / 2) + ', ' + (parseInt(mapPinMain.style.top, 10) + MAIN_PIN_SIZE_Y);
   var fieldsets = adForm.querySelectorAll('fieldset');
   for (i = 0; i < fieldsets.length; i++) {
     fieldsets[i].disabled = true;
   }
 
-  function setPageToActiveMode() {
+  window.map.setPageToActiveMode = function () {
     document.querySelector('.map').classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
     var l = 0;
@@ -31,11 +31,13 @@
       fieldsets[l].disabled = false;
       l = l + 1;
     }
-    document.querySelector('.map__pins').appendChild(window.pin.createPinsFragment(window.map.posterArr));
+    var data = window.filters.updateData();
+    // document.querySelector('.map__pins').appendChild(window.pin.createPinsFragment(window.map.posterArr));
+    window.pin.createPinsFragment(data);
     var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
     l = 0;
     while (l < mapPins.length) {
-      mapPins[l].addEventListener('click', window.card.generateClickHandler(window.map.posterArr[l]));
+      mapPins[l].addEventListener('click', window.card.generateClickHandler(data[l]));
       l = l + 1;
     }
     // function list() {
@@ -43,20 +45,22 @@
     // }
     // var list1 = list(1, 2, 3);
     // window.map.pins = list(mapPins);
-    for (i = 4; i < mapPins.length; i++) {
-      mapPins[i].remove();
-    }
+    // for (i = 6; i < mapPins.length; i++) {
+    //   mapPins[i].remove();
+    // }
     // for (l = 0; l < mapPins.length; l++) {
     //   mapPins[l].remove();
     // }
     // for (i = 0; i < 5; i++) {
     //   mapPins[i].classList.add('hidden');
     // }
-  }
+  };
+
+  // var dragged = false;
 
   mapPinMain.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
-    var dragged = false;
+    // dragged = false;
     function getCoords(elem) {
       var box = elem.getBoundingClientRect();
       return {
@@ -78,7 +82,7 @@
         bottom: COORDINATES_Y_MAX,
         left: bodyMarginLeft
       };
-      dragged = true;
+      // dragged = true;
       var newLocation = {
         x: shiftX,
         y: limits.top + shiftY
@@ -98,24 +102,34 @@
       document.querySelector('#address').value = (mapPinMain.offsetLeft + MAIN_PIN_SIZE_X / 2) + ', ' + (mapPinMain.offsetTop + MAIN_PIN_SIZE_Y);
     }
 
-    function onDocumentMouseUp(upEvt) {
+    // function onDocumentMouseUp(upEvt) {
+    //   upEvt.preventDefault();
+    //   if (checkMapFaded()) {
+    //     // window.backend.load(onSuccess, window.map.onError);
+    //     window.backend.load(window.filters.onLoadSuccess, window.map.onError);
+    //   }
+    //   document.removeEventListener('mousemove', onDocumentMouseMove);
+    //   document.removeEventListener('mouseup', onDocumentMouseUp);
+    //   if (dragged) {
+    //     var onClickPreventDefault = function () {
+    //       evt.preventDefault();
+    //       mapPinMain.removeEventListener('click', onClickPreventDefault);
+    //     };
+    //     mapPinMain.addEventListener('click', onClickPreventDefault);
+    //   }
+    // }
+
+    var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
-      if (checkMapFaded()) {
-        window.backend.load(onSuccess, window.map.onError);
-      }
+
       document.removeEventListener('mousemove', onDocumentMouseMove);
-      document.removeEventListener('mouseup', onDocumentMouseUp);
-      if (dragged) {
-        var onClickPreventDefault = function () {
-          evt.preventDefault();
-          mapPinMain.removeEventListener('click', onClickPreventDefault);
-        };
-        mapPinMain.addEventListener('click', onClickPreventDefault);
-      }
-    }
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mouseup', onMouseUp);
 
     document.addEventListener('mousemove', onDocumentMouseMove);
-    document.addEventListener('mouseup', onDocumentMouseUp);
+    // document.addEventListener('mouseup', onPinMainMouseUp);
   });
 
   window.map.onCloseButtonClick = function () {
@@ -140,13 +154,47 @@
     }, 10000);
   };
 
-  function onSuccess(cardsArray) {
-    window.map.posterArr = cardsArray;
-    window.card.generateCli = function () {
-      return function () {
-        window.map.ddd = window.map.posterArr;
-      };
-    };
-    setPageToActiveMode();
+  function onPinMainMouseUp(upEvt) {
+    upEvt.preventDefault();
+    document.querySelector('.map').classList.remove('map--faded');
+    adForm.classList.remove('ad-form--disabled');
+    var l = 0;
+    while (l < fieldsets.length) {
+      fieldsets[l].disabled = false;
+      l = l + 1;
+    }
+    window.backend.load(window.filters.onLoadSuccess, window.map.onError);
+    var data = window.filters.updateData();
+    // document.querySelector('.map__pins').appendChild(window.pin.createPinsFragment(window.map.posterArr));
+    window.pin.createPinsFragment(data);
+    var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    l = 0;
+    while (l < mapPins.length) {
+      mapPins[l].addEventListener('click', window.card.generateClickHandler(data[l]));
+      l = l + 1;
+    }
+    mapPinMain.removeEventListener('mouseup', onPinMainMouseUp);
+    // if (dragged) {
+    //   var onClickPreventDefault = function () {
+    //     upEvt.preventDefault();
+    //     mapPinMain.removeEventListener('click', onClickPreventDefault);
+    //   };
+    //   mapPinMain.addEventListener('click', onClickPreventDefault);
+    // }
   }
+
+  var loadPage = function () {
+    mapPinMain.addEventListener('mouseup', onPinMainMouseUp);
+  };
+  loadPage();
+
+  // function onSuccess(cardsArray) {
+  //   window.map.posterArr = cardsArray;
+  //   // window.card.generateCli = function () {
+  //   //   return function () {
+  //   //     window.map.ddd = window.map.posterArr;
+  //   //   };
+  //   // };
+  //   setPageToActiveMode();
+  // }
 })();
