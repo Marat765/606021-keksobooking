@@ -170,6 +170,8 @@
       input.style.cssText = '';
     }
     capacitySelect.style.cssText = '';
+    priceHouse.placeholder = PRICE_MIN_FLAT;
+    priceHouse.min = PRICE_MIN_FLAT;
     window.map.loadPage();
   }
 
