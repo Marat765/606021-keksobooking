@@ -15,9 +15,7 @@
 
   function renderFeatures(advData) {
     var mapFeatures = mapCard.querySelector('.popup__features');
-    while (mapFeatures.firstChild) {
-      mapFeatures.removeChild(mapFeatures.firstChild);
-    }
+    mapFeatures.innerHTML = '';
     var m = 0;
     while (m < advData.offer.features.length) {
       var feature = document.createElement('li');
